@@ -1,0 +1,38 @@
+{
+    "name": "ian-ozzie/html",
+    "description": "Object based HTML generator",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ian Oswald",
+            "email": "ian@ozzie.io"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ozzie\\Html\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.3"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ozzie\\Html\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "ian-ozzie/phpcs": "^1.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

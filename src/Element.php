@@ -1,0 +1,215 @@
+<?php declare(strict_types = 1);
+
+namespace Ozzie\Html;
+
+class Element extends Component {
+
+    /**
+     * Known void tags
+     * ref: https://developer.mozilla.org/en-US/docs/Glossary/Void_element
+     *
+     * @const array<string>
+     */
+    protected const array VOID_TAGS = [
+        'area',
+        'base',
+        'br',
+        'col',
+        'embed',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'source',
+        'track',
+        'wbr',
+    ];
+
+    /**
+     * Element controls
+     *
+     * @var array<string, bool>
+     */
+    protected array $controls = [
+        'void'         => false,
+        'render_empty' => true,
+    ];
+
+    /**
+     * Element attributes
+     *
+     * @var array<string, mixed>
+     */
+    protected array $attributes = [];
+
+    /**
+     * Element classes
+     *
+     * @var array<int, string>
+     */
+    protected array $classes = [];
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function __construct(
+        protected readonly string $tag,
+        array $attributes=[],
+        mixed $content=null
+    ) {
+        if (in_array($this->tag, static::VOID_TAGS) === true) {
+            $this->controls['void'] = true;
+        }
+
+        $this->set_attributes($attributes);
+        if (isset($content) === true) {
+            $this->add_content($content);
+        }
+    }
+
+    public function get_control(string $key): bool
+    {
+        return $this->controls[$key];
+    }
+
+    /**
+     * @param array<string, bool> $controls
+     */
+    public function set_control(string $key, bool $val): static
+    {
+        if (isset($this->controls[$key]) === true) {
+            $this->controls[$key] = $val;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array<string, bool> $controls
+     */
+    public function set_controls(array $controls): static
+    {
+        foreach ($controls as $key => $val) {
+            if (isset($this->controls[$key]) === false) {
+                continue;
+            }
+
+            $this->controls[$key] = $val;
+        }
+
+        return $this;
+    }
+
+    public function add_class(string $class): static
+    {
+        $this->classes = array_unique(array_merge($this->classes, [$class]));
+        return $this;
+    }
+
+    /**
+     * @param string|array<int, string> $classes
+     */
+    public function add_classes(string|array $classes): static
+    {
+        if (is_string($classes) === true) {
+            $classes = explode(' ', $classes);
+        }
+
+        $this->classes = array_unique(array_merge($this->classes, $classes));
+        return $this;
+    }
+
+    /**
+     * @param string|array<int, string> $classes
+     */
+    public function set_classes(string|array $classes): static
+    {
+        if (is_string($classes) === true) {
+            $classes = explode(' ', $classes);
+        }
+
+        $this->classes = $classes;
+        return $this;
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function add_attribute(string $key, mixed $val): static
+    {
+        match ($key) {
+            'class'     => $this->add_classes($val),
+            '_controls' => $this->set_controls($val),
+            default     => $this->attributes[$key] = $val,
+        };
+
+        return $this;
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function add_attributes(array $attributes): static
+    {
+        foreach ($attributes as $key => $val) {
+            $this->add_attribute($key, $val);
+        }
+
+        return $this;
+    }
+
+    public function get_attribute(string $key): mixed
+    {
+        return $this->attributes[$key] ?? null;
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function set_attributes(array $attributes): static
+    {
+        $this->attributes = [];
+        $this->add_attributes($attributes);
+
+        return $this;
+    }
+
+    public function render(): string
+    {
+        if ($this->get_control('void') === true) {
+            return $this->render_open();
+        }
+
+        $content = parent::render();
+        if (empty($content) === true && $this->get_control('render_empty') === false) {
+            return '';
+        }
+
+        return $this->render_open().$content.$this->render_close();
+    }
+
+    public function render_open(): string
+    {
+        $attributes = $this->attributes;
+        if (empty($this->classes) === false) {
+            $attributes = array_merge($attributes, ['class' => implode(' ', $this->classes)]);
+        }
+
+        ksort($attributes);
+        $attrs = '';
+        foreach ($attributes as $key => $val) {
+            $attrs .= (is_null($val) === true || $val === '')
+                ? sprintf(' %s', $key)
+                : sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
+        }
+
+        return '<'.$this->tag.$attrs.'>';
+    }
+
+    public function render_close(): string
+    {
+        return '</'.$this->tag.'>';
+    }
+
+}
