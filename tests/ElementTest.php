@@ -208,3 +208,9 @@ test('render_close', function () {
     $element = new Element('span');
     expect($element->render_close())->toBe('</span>');
 });
+
+test('render_open_non_stringable_attribute_throws', function () {
+    $element = new Element('span');
+    $element->add_attribute('foo', new stdClass);
+    expect(fn () => $element->render_open())->toThrow(InvalidArgumentException::class);
+});

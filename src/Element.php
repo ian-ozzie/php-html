@@ -254,8 +254,13 @@ class Element extends Component
             if (is_null($val) === true || $val === '') {
                 $attrs .= sprintf(' %s', $key);
             } else {
-                $_val = (is_scalar($val) || $val instanceof Stringable) ? (string) $val : '';
-                $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars($_val, ENT_QUOTES));
+                if (is_scalar($val) === false && $val instanceof Stringable === false) {
+                    throw new InvalidArgumentException(
+                        $this::class.'->render_open(): attribute "'.$key.'" value ('.gettype($val).') must be scalar or Stringable',
+                    );
+                }
+
+                $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
             }
         }
 
