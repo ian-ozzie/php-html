@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use Ozzie\Html\Page;
 
+afterEach(function () {
+    Page::reset();
+});
+
 test('construct', function () {
     $reflector = new ReflectionClass(Page::class);
     $constructor = $reflector->getConstructor();

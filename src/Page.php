@@ -24,4 +24,9 @@ class Page extends Html
     {
         return self::$pages[$key] ??= new self;
     }
+
+    public static function reset(): void
+    {
+        self::$pages = [];
+    }
 }
