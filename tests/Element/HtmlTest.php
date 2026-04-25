@@ -2,45 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Ozzie\Html\Tests;
-
 use Ozzie\Html\Element\Html;
-use PHPUnit\Framework\TestCase;
 
-class HtmlTest extends TestCase
-{
-    public function test_construct_render(): void
-    {
-        $element = new Html;
-        $this->assertSame('<!DOCTYPE html><html><body></body></html>', (string) $element);
-    }
+test('construct_render', function () {
+    $element = new Html;
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body></body></html>');
+});
 
-    public function test_content(): void
-    {
-        $element = new Html;
-        $element->add_content('Hello World');
-        $this->assertSame('<!DOCTYPE html><html><body>Hello World</body></html>', (string) $element);
-        $element->content_append('!');
-        $this->assertSame('<!DOCTYPE html><html><body>Hello World!</body></html>', (string) $element);
-        $element->content_prepend('!');
-        $this->assertSame('<!DOCTYPE html><html><body>!Hello World!</body></html>', (string) $element);
-        $element->content_set('foo');
-        $this->assertSame('<!DOCTYPE html><html><body>foo</body></html>', (string) $element);
-    }
+test('content', function () {
+    $element = new Html;
+    $element->add_content('Hello World');
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body>Hello World</body></html>');
+    $element->content_append('!');
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body>Hello World!</body></html>');
+    $element->content_prepend('!');
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body>!Hello World!</body></html>');
+    $element->content_set('foo');
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body>foo</body></html>');
+});
 
-    public function test_add_element(): void
-    {
-        $element = new Html;
-        $result = $element->add_element('span');
-        $this->assertSame($result, $element);
-        $this->assertSame('<!DOCTYPE html><html><body><span></span></body></html>', (string) $element);
-    }
+test('add_element', function () {
+    $element = new Html;
+    $result = $element->add_element('span');
+    expect($result)->toBe($element);
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body><span></span></body></html>');
+});
 
-    public function test_new_element(): void
-    {
-        $element = new Html;
-        $result = $element->new_element('span');
-        $this->assertNotSame($result, $element);
-        $this->assertSame('<!DOCTYPE html><html><body><span></span></body></html>', (string) $element);
-    }
-}
+test('new_element', function () {
+    $element = new Html;
+    $result = $element->new_element('span');
+    expect($result)->not->toBe($element);
+    expect((string) $element)->toBe('<!DOCTYPE html><html><body><span></span></body></html>');
+});

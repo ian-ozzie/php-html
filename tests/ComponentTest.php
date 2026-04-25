@@ -2,184 +2,152 @@
 
 declare(strict_types=1);
 
-namespace Ozzie\Html\Tests;
-
-use InvalidArgumentException;
 use Ozzie\Html\Component;
 use Ozzie\Html\Element;
-use PHPUnit\Framework\TestCase;
-use stdClass;
-use Stringable;
 
-class ComponentTest extends TestCase
-{
-    public function test_render(): void
+test('render', function () {
+    $component = new Component;
+    expect($component->render())->toBe('');
+});
+
+test('to_string', function () {
+    $component = new Component;
+    expect((string) $component)->toBe('');
+});
+
+test('add_content', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->add_content('bar');
+
+    expect((string) $component)->toBe('foobar');
+});
+
+test('add_content_with_append', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->add_content('bar', true);
+
+    expect((string) $component)->toBe('foobar');
+});
+
+test('add_content_with_prepend', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->add_content('bar', false);
+
+    expect((string) $component)->toBe('barfoo');
+});
+
+test('content_append', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->content_append('bar');
+
+    expect((string) $component)->toBe('foobar');
+});
+
+test('content_prepend', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->content_prepend('bar');
+
+    expect((string) $component)->toBe('barfoo');
+});
+
+test('content_set', function () {
+    $component = new Component;
+    $component
+        ->add_content('foo')
+        ->content_set('bar');
+
+    expect((string) $component)->toBe('bar');
+});
+
+test('content_set_array', function () {
+    $component = new Component;
+    $component->content_set(['foo', 'bar', 'baz']);
+    expect((string) $component)->toBe('foobarbaz');
+});
+
+test('render_mixed_null', function () {
+    $component = new Component;
+    expect($component->render_mixed(null))->toBe('');
+});
+
+test('render_mixed_string', function () {
+    $component = new Component;
+    expect($component->render_mixed('foo'))->toBe('foo');
+});
+
+test('render_mixed_int', function () {
+    $component = new Component;
+    expect($component->render_mixed(42))->toBe('42');
+});
+
+test('render_mixed_float', function () {
+    $component = new Component;
+    expect($component->render_mixed(3.14))->toBe('3.14');
+});
+
+test('render_mixed_array', function () {
+    $component = new Component;
+    expect($component->render_mixed(['foo', 'bar', 'baz']))->toBe('foobarbaz');
+});
+
+test('render_mixed_object', function () {
+    $component = new Component;
+    expect(fn () => $component->render_mixed(new stdClass))->toThrow(InvalidArgumentException::class);
+});
+
+test('render_mixed_object_stringable', function () {
+    $component = new Component;
+    $stringable = new class implements Stringable
     {
-        $component = new Component;
-        $this->assertSame('', $component->render());
-    }
-
-    public function test_to_string(): void
-    {
-        $component = new Component;
-        $this->assertSame('', (string) $component);
-    }
-
-    public function test_add_content(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->add_content('bar');
-
-        $this->assertSame('foobar', (string) $component);
-    }
-
-    public function test_add_content_with_append(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->add_content('bar', true);
-
-        $this->assertSame('foobar', (string) $component);
-    }
-
-    public function test_add_content_with_prepend(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->add_content('bar', false);
-
-        $this->assertSame('barfoo', (string) $component);
-    }
-
-    public function test_content_append(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->content_append('bar');
-
-        $this->assertSame('foobar', (string) $component);
-    }
-
-    public function test_content_prepend(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->content_prepend('bar');
-
-        $this->assertSame('barfoo', (string) $component);
-    }
-
-    public function test_content_set(): void
-    {
-        $component = new Component;
-        $component
-            ->add_content('foo')
-            ->content_set('bar');
-
-        $this->assertSame('bar', (string) $component);
-    }
-
-    public function test_content_set_array(): void
-    {
-        $component = new Component;
-        $component->content_set(['foo', 'bar', 'baz']);
-        $this->assertSame('foobarbaz', (string) $component);
-    }
-
-    public function test_render_mixed_null(): void
-    {
-        $component = new Component;
-        $this->assertSame('', $component->render_mixed(null));
-    }
-
-    public function test_render_mixed_string(): void
-    {
-        $component = new Component;
-        $this->assertSame('foo', $component->render_mixed('foo'));
-    }
-
-    public function test_render_mixed_int(): void
-    {
-        $component = new Component;
-        $this->assertSame('42', $component->render_mixed(42));
-    }
-
-    public function test_render_mixed_float(): void
-    {
-        $component = new Component;
-        $this->assertSame('3.14', $component->render_mixed(3.14));
-    }
-
-    public function test_render_mixed_array(): void
-    {
-        $component = new Component;
-        $this->assertSame('foobarbaz', $component->render_mixed(['foo', 'bar', 'baz']));
-    }
-
-    public function test_render_mixed_object(): void
-    {
-        $component = new Component;
-        $this->expectException(InvalidArgumentException::class);
-        $component->render_mixed(new stdClass);
-    }
-
-    public function test_render_mixed_object_stringable(): void
-    {
-        $component = new Component;
-        $stringable = new class implements Stringable
+        public function __toString(): string
         {
-            public function __toString(): string
-            {
-                return 'foo';
-            }
-        };
-        $this->assertSame('foo', $component->render_mixed($stringable));
-    }
+            return 'foo';
+        }
+    };
+    expect($component->render_mixed($stringable))->toBe('foo');
+});
 
-    public function test_render_mixed_bool_throws(): void
-    {
-        $component = new Component;
-        $this->expectException(InvalidArgumentException::class);
-        $component->render_mixed(true);
-    }
+test('render_mixed_bool_throws', function () {
+    $component = new Component;
+    expect(fn () => $component->render_mixed(true))->toThrow(InvalidArgumentException::class);
+});
 
-    public function test_element(): void
-    {
-        $element = Component::Element('foo');
-        $this->assertInstanceOf(Element::class, $element);
-    }
+test('element', function () {
+    $element = Component::Element('foo');
+    expect($element)->toBeInstanceOf(Element::class);
+});
 
-    public function test_add_element(): void
-    {
-        $component = new Component;
-        $result = $component->add_element('foo');
-        $this->assertSame($component, $result);
-        $this->assertSame((string) new Element('foo'), (string) $component);
-    }
+test('add_element', function () {
+    $component = new Component;
+    $result = $component->add_element('foo');
+    expect($result)->toBe($component);
+    expect((string) $component)->toBe((string) new Element('foo'));
+});
 
-    public function test_new_element(): void
-    {
-        $component = new Component;
-        $result = $component->new_element('foo');
-        $this->assertInstanceOf(Element::class, $result);
-        $this->assertSame((string) new Element('foo'), (string) $component);
-    }
+test('new_element', function () {
+    $component = new Component;
+    $result = $component->new_element('foo');
+    expect($result)->toBeInstanceOf(Element::class);
+    expect((string) $component)->toBe((string) new Element('foo'));
+});
 
-    public function test_chaining_functions(): void
-    {
-        $component = new Component;
+test('chaining_functions', function () {
+    $component = new Component;
 
-        $this->assertSame($component, $component->add_content('foo'));
-        $this->assertSame($component, $component->content_append('foo'));
-        $this->assertSame($component, $component->content_prepend('foo'));
-        $this->assertSame($component, $component->content_set('foo'));
+    expect($component->add_content('foo'))->toBe($component);
+    expect($component->content_append('foo'))->toBe($component);
+    expect($component->content_prepend('foo'))->toBe($component);
+    expect($component->content_set('foo'))->toBe($component);
 
-        $this->assertSame($component, $component->add_element('foo'));
-    }
-}
+    expect($component->add_element('foo'))->toBe($component);
+});

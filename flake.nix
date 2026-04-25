@@ -19,14 +19,35 @@
         let
           inherit (nixpkgs.legacyPackages.${system}) mkShell;
           pkgs = nixpkgs.legacyPackages.${system};
-          php = pkgs.php83;
+          customPHP = pkgs.php83.buildEnv {
+            extensions = { enabled, all, ... }:
+              enabled
+              ++ (with all; [
+                pcov
+                xdebug
+              ]);
+            extraConfig = ''
+              error_reporting = E_ALL
+              display_errors = On
+              display_startup_errors = On
+              log_errors = On
+              log_errors_max_len = 0
+
+              [xdebug]
+              xdebug.mode = develop,debug
+              xdebug.discover_client_host = 1
+              xdebug.start_with_request = trigger
+              xdebug.log_level = 0
+            '';
+          };
         in
         {
           default = mkShell {
             packages = with pkgs; [
-              php
-              php.packages.composer
+              customPHP
+              customPHP.packages.composer
               pre-commit
+              xc
             ];
 
             shellHook = ''

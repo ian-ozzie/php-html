@@ -23,9 +23,9 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.0",
         "ian-ozzie/pint-config": "^1.0",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "pestphp/pest": "^4.6"
     },
     "scripts": {
         "lint": [
@@ -36,7 +36,15 @@
             "pint"
         ],
         "test": [
-            "phpunit"
+            "pest"
+        ],
+        "test:coverage": [
+            "pest --coverage"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }

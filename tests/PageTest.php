@@ -2,37 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Ozzie\Html\Tests;
-
 use Ozzie\Html\Page;
-use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
-class PageTest extends TestCase
-{
-    public function test_construct(): void
-    {
-        $reflector = new ReflectionClass(Page::class);
-        $constructor = $reflector->getConstructor();
-        $this->assertNotNull($constructor);
-        $this->assertTrue($constructor->isPrivate());
-    }
+test('construct', function () {
+    $reflector = new ReflectionClass(Page::class);
+    $constructor = $reflector->getConstructor();
+    expect($constructor)->not->toBeNull();
+    expect($constructor?->isPrivate())->toBeTrue();
+});
 
-    public function test_get_instance(): void
-    {
-        $root = Page::get_instance('/');
-        $this->assertInstanceOf(Page::class, $root);
+test('get_instance', function () {
+    $root = Page::get_instance('/');
+    expect($root)->toBeInstanceOf(Page::class);
 
-        $foo = Page::get_instance('/foo');
-        $this->assertInstanceOf(Page::class, $foo);
-        $this->assertNotSame($root, $foo);
+    $foo = Page::get_instance('/foo');
+    expect($foo)->toBeInstanceOf(Page::class);
+    expect($foo)->not->toBe($root);
 
-        $duplicate = Page::get_instance('/');
-        $this->assertInstanceOf(Page::class, $duplicate);
-        $this->assertSame($root, $duplicate);
+    $duplicate = Page::get_instance('/');
+    expect($duplicate)->toBeInstanceOf(Page::class);
+    expect($duplicate)->toBe($root);
 
-        $bar = Page::get_instance('/foo');
-        $this->assertInstanceOf(Page::class, $bar);
-        $this->assertSame($foo, $bar);
-    }
-}
+    $bar = Page::get_instance('/foo');
+    expect($bar)->toBeInstanceOf(Page::class);
+    expect($bar)->toBe($foo);
+});

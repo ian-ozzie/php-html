@@ -2,188 +2,182 @@
 
 declare(strict_types=1);
 
-namespace Ozzie\Html\Tests;
-
 use Ozzie\Html\Element;
-use PHPUnit\Framework\TestCase;
 
-class ElementTest extends TestCase
-{
-    public function test_construct(): void
-    {
-        $element = new Element('span');
-        $this->assertSame('<span></span>', (string) $element);
-    }
+test('construct', function () {
+    $element = new Element('span');
+    expect((string) $element)->toBe('<span></span>');
+});
 
-    public function test_element_with_attribute(): void
-    {
-        $element = new Element('span', ['hello' => 'world']);
-        $this->assertSame('<span hello="world"></span>', (string) $element);
-    }
+test('element_with_attribute', function () {
+    $element = new Element('span', ['hello' => 'world']);
+    expect((string) $element)->toBe('<span hello="world"></span>');
+});
 
-    public function test_construct_with_content(): void
-    {
-        $element = new Element('span', content: 'foo');
-        $this->assertSame('<span>foo</span>', (string) $element);
-    }
+test('construct_with_content', function () {
+    $element = new Element('span', content: 'foo');
+    expect((string) $element)->toBe('<span>foo</span>');
+});
 
-    public function test_construct_with_attribute_and_content(): void
-    {
-        $element = new Element('span', ['hello' => 'world'], 'foo');
-        $this->assertSame('<span hello="world">foo</span>', (string) $element);
-    }
+test('construct_with_attribute_and_content', function () {
+    $element = new Element('span', ['hello' => 'world'], 'foo');
+    expect((string) $element)->toBe('<span hello="world">foo</span>');
+});
 
-    public function test_get_control(): void
-    {
-        $element = new Element('span');
-        $this->assertSame(false, $element->get_control('void'));
-        $this->assertSame(true, $element->get_control('render_empty'));
-    }
+test('get_control', function () {
+    $element = new Element('span');
+    expect($element->get_control('void'))->toBe(false);
+    expect($element->get_control('render_empty'))->toBe(true);
+});
 
-    public function test_get_control_with_constructor(): void
-    {
-        $element = new Element('span', ['_controls' => ['void' => true]]);
-        $this->assertSame(true, $element->get_control('void'));
-        $this->assertSame(true, $element->get_control('render_empty'));
-    }
+test('get_control_with_constructor', function () {
+    $element = new Element('span', ['_controls' => ['void' => true]]);
+    expect($element->get_control('void'))->toBe(true);
+    expect($element->get_control('render_empty'))->toBe(true);
+});
 
-    public function test_set_control(): void
-    {
-        $element = new Element('span');
-        $element->set_control('void', true);
-        $this->assertSame(true, $element->get_control('void'));
-        $this->assertSame(true, $element->get_control('render_empty'));
-    }
+test('set_control', function () {
+    $element = new Element('span');
+    $element->set_control('void', true);
+    expect($element->get_control('void'))->toBe(true);
+    expect($element->get_control('render_empty'))->toBe(true);
+});
 
-    public function test_set_controls(): void
-    {
-        $element = new Element('span');
-        $element->set_controls(['void' => true, 'render_empty' => false]);
-        $this->assertSame(true, $element->get_control('void'));
-        $this->assertSame(false, $element->get_control('render_empty'));
-    }
+test('set_controls', function () {
+    $element = new Element('span');
+    $element->set_controls(['void' => true, 'render_empty' => false]);
+    expect($element->get_control('void'))->toBe(true);
+    expect($element->get_control('render_empty'))->toBe(false);
+});
 
-    public function test_add_class(): void
-    {
-        $element = new Element('span');
-        $element->add_class('foo');
-        $this->assertSame('<span class="foo"></span>', (string) $element);
-    }
+test('set_controls_with_unknown_key', function () {
+    $element = new Element('span');
+    $element->set_controls(['void' => true, 'unknown_key' => true]);
+    expect($element->get_control('void'))->toBe(true);
+});
 
-    public function test_add_class_with_constructor(): void
-    {
-        $element = new Element('span', ['class' => 'foo']);
-        $this->assertSame('<span class="foo"></span>', (string) $element);
-    }
+test('add_class', function () {
+    $element = new Element('span');
+    $element->add_class('foo');
+    expect((string) $element)->toBe('<span class="foo"></span>');
+});
 
-    public function test_add_classes(): void
-    {
-        $element = new Element('span');
-        $element->add_classes(['foo', 'bar']);
-        $this->assertSame('<span class="foo bar"></span>', (string) $element);
-    }
+test('add_class_with_constructor', function () {
+    $element = new Element('span', ['class' => 'foo']);
+    expect((string) $element)->toBe('<span class="foo"></span>');
+});
 
-    public function test_add_classes_with_constructor(): void
-    {
-        $element = new Element('span', ['class' => ['foo', 'bar']]);
-        $this->assertSame('<span class="foo bar"></span>', (string) $element);
-    }
+test('add_classes', function () {
+    $element = new Element('span');
+    $element->add_classes(['foo', 'bar']);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
 
-    public function test_set_classes(): void
-    {
-        $element = new Element('span', ['class' => 'baz']);
-        $element->set_classes(['foo', 'bar']);
-        $this->assertSame('<span class="foo bar"></span>', (string) $element);
-    }
+test('add_classes_with_string', function () {
+    $element = new Element('span');
+    $element->add_classes('foo bar');
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
 
-    public function test_add_attribute(): void
-    {
-        $element = new Element('span');
-        $element->add_attribute('hello', 'world');
-        $this->assertSame('<span hello="world"></span>', (string) $element);
-    }
+test('add_classes_with_constructor', function () {
+    $element = new Element('span', ['class' => ['foo', 'bar']]);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
 
-    public function test_add_attribute_null_empty(): void
-    {
-        $element = new Element('span');
-        $element->add_attribute('hello', null);
-        $element->add_attribute('world', '');
-        $this->assertSame('<span hello world></span>', (string) $element);
-    }
+test('set_classes', function () {
+    $element = new Element('span', ['class' => 'baz']);
+    $element->set_classes(['foo', 'bar']);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
 
-    public function test_add_attributes(): void
-    {
-        $element = new Element('span');
-        $element->add_attributes(['foo' => '', 'hello' => 'world']);
-        $this->assertSame('<span foo hello="world"></span>', (string) $element);
-    }
+test('set_classes_with_string', function () {
+    $element = new Element('span', ['class' => 'baz']);
+    $element->set_classes('foo bar');
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
 
-    public function test_add_attributes_order(): void
-    {
-        $element = new Element('span');
-        $element->add_attributes(['hello' => 'world', 'foo' => '']);
-        $this->assertSame('<span foo hello="world"></span>', (string) $element);
-    }
+test('add_attribute', function () {
+    $element = new Element('span');
+    $element->add_attribute('hello', 'world');
+    expect((string) $element)->toBe('<span hello="world"></span>');
+});
 
-    public function test_get_attributes(): void
-    {
-        $element = new Element('span');
-        $element->add_attributes(['foo' => '', 'hello' => 'world']);
-        $this->assertSame('', $element->get_attribute('foo'));
-        $this->assertSame('world', $element->get_attribute('hello'));
+test('add_attribute_null_empty', function () {
+    $element = new Element('span');
+    $element->add_attribute('hello', null);
+    $element->add_attribute('world', '');
+    expect((string) $element)->toBe('<span hello world></span>');
+});
 
-        $this->assertSame(null, $element->get_attribute('unknown'));
-    }
+test('add_attributes', function () {
+    $element = new Element('span');
+    $element->add_attributes(['foo' => '', 'hello' => 'world']);
+    expect((string) $element)->toBe('<span foo hello="world"></span>');
+});
 
-    public function test_set_attributes(): void
-    {
-        $element = new Element('span', ['foo' => 'bar']);
-        $this->assertSame('<span foo="bar"></span>', (string) $element);
-        $element->set_attributes(['hello' => 'world']);
-        $this->assertSame('<span hello="world"></span>', (string) $element);
-    }
+test('add_attributes_order', function () {
+    $element = new Element('span');
+    $element->add_attributes(['hello' => 'world', 'foo' => '']);
+    expect((string) $element)->toBe('<span foo hello="world"></span>');
+});
 
-    public function test_render(): void
-    {
-        $element = new Element('span');
-        $this->assertSame('<span></span>', $element->render());
-    }
+test('add_attribute_controls_non_array', function () {
+    $element = new Element('span');
+    $result = $element->add_attribute('_controls', 'invalid');
+    expect($result)->toBe($element);
+    expect((string) $element)->toBe('<span></span>');
+});
 
-    public function test_render_auto_void(): void
-    {
-        $element = new Element('br');
-        $this->assertSame('<br>', $element->render());
-    }
+test('get_attributes', function () {
+    $element = new Element('span');
+    $element->add_attributes(['foo' => '', 'hello' => 'world']);
+    expect($element->get_attribute('foo'))->toBe('');
+    expect($element->get_attribute('hello'))->toBe('world');
 
-    public function test_render_manual_void(): void
-    {
-        $element = new Element('span', ['_controls' => ['void' => true]]);
-        $this->assertSame('<span>', $element->render());
-    }
+    expect($element->get_attribute('unknown'))->toBeNull();
+});
 
-    public function test_render_when_empty(): void
-    {
-        $element = new Element('span');
-        $this->assertSame('<span></span>', $element->render());
-        $element->set_control('render_empty', false);
-        $this->assertSame('', $element->render());
-    }
+test('set_attributes', function () {
+    $element = new Element('span', ['foo' => 'bar']);
+    expect((string) $element)->toBe('<span foo="bar"></span>');
+    $element->set_attributes(['hello' => 'world']);
+    expect((string) $element)->toBe('<span hello="world"></span>');
+});
 
-    public function test_render_open(): void
-    {
-        $element = new Element('span');
-        $this->assertSame('<span>', $element->render_open());
-        $element->add_class('test');
-        $this->assertSame('<span class="test">', $element->render_open());
-        $element->add_attribute('hello', 'world');
-        $this->assertSame('<span class="test" hello="world">', $element->render_open());
-        $element->add_attribute('foo', '');
-        $this->assertSame('<span class="test" foo hello="world">', $element->render_open());
-    }
+test('render', function () {
+    $element = new Element('span');
+    expect($element->render())->toBe('<span></span>');
+});
 
-    public function test_render_close(): void
-    {
-        $element = new Element('span');
-        $this->assertSame('</span>', $element->render_close());
-    }
-}
+test('render_auto_void', function () {
+    $element = new Element('br');
+    expect($element->render())->toBe('<br>');
+});
+
+test('render_manual_void', function () {
+    $element = new Element('span', ['_controls' => ['void' => true]]);
+    expect($element->render())->toBe('<span>');
+});
+
+test('render_when_empty', function () {
+    $element = new Element('span');
+    expect($element->render())->toBe('<span></span>');
+    $element->set_control('render_empty', false);
+    expect($element->render())->toBe('');
+});
+
+test('render_open', function () {
+    $element = new Element('span');
+    expect($element->render_open())->toBe('<span>');
+    $element->add_class('test');
+    expect($element->render_open())->toBe('<span class="test">');
+    $element->add_attribute('hello', 'world');
+    expect($element->render_open())->toBe('<span class="test" hello="world">');
+    $element->add_attribute('foo', '');
+    expect($element->render_open())->toBe('<span class="test" foo hello="world">');
+});
+
+test('render_close', function () {
+    $element = new Element('span');
+    expect($element->render_close())->toBe('</span>');
+});

@@ -11,10 +11,8 @@ repos:
       entry: composer run lint
       language: system
       types: [php]
-    - id: test
-      name: PHPUnit test
+    - id: pest-test
+      name: Pest test
       entry: composer run test
       language: system
       types: [php]
-      always_run: true
-      pass_filenames: false
