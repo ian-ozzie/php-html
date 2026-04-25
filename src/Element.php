@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ozzie\Html;
 
+use InvalidArgumentException;
 use Stringable;
 
 class Element extends Component
@@ -74,6 +75,12 @@ class Element extends Component
 
     public function get_control(string $key): bool
     {
+        if (isset($this->controls[$key]) === false) {
+            throw new InvalidArgumentException(
+                $this::class.'->get_control(): unknown control key "'.$key.'"',
+            );
+        }
+
         return $this->controls[$key];
     }
 
@@ -83,7 +90,7 @@ class Element extends Component
     public function sanitise_controls(array $controls): static
     {
         foreach ($controls as $key => $val) {
-            if (is_string($key) === true && is_bool($val) === true) {
+            if (is_string($key) === true && is_bool($val) === true && isset($this->controls[$key]) === true) {
                 $this->set_control($key, $val);
             }
         }
@@ -93,9 +100,13 @@ class Element extends Component
 
     public function set_control(string $key, bool $val): static
     {
-        if (isset($this->controls[$key]) === true) {
-            $this->controls[$key] = $val;
+        if (isset($this->controls[$key]) === false) {
+            throw new InvalidArgumentException(
+                $this::class.'->set_control(): unknown control key "'.$key.'"',
+            );
         }
+
+        $this->controls[$key] = $val;
 
         return $this;
     }
@@ -107,7 +118,9 @@ class Element extends Component
     {
         foreach ($controls as $key => $val) {
             if (isset($this->controls[$key]) === false) {
-                continue;
+                throw new InvalidArgumentException(
+                    $this::class.'->set_controls(): unknown control key "'.$key.'"',
+                );
             }
 
             $this->controls[$key] = $val;

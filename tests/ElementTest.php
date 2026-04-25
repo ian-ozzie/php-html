@@ -30,6 +30,11 @@ test('get_control', function () {
     expect($element->get_control('render_empty'))->toBe(true);
 });
 
+test('get_control_unknown_key_throws', function () {
+    $element = new Element('span');
+    expect(fn () => $element->get_control('unknown'))->toThrow(InvalidArgumentException::class);
+});
+
 test('get_control_with_constructor', function () {
     $element = new Element('span', ['_controls' => ['void' => true]]);
     expect($element->get_control('void'))->toBe(true);
@@ -50,10 +55,14 @@ test('set_controls', function () {
     expect($element->get_control('render_empty'))->toBe(false);
 });
 
-test('set_controls_with_unknown_key', function () {
+test('set_control_unknown_key_throws', function () {
     $element = new Element('span');
-    $element->set_controls(['void' => true, 'unknown_key' => true]);
-    expect($element->get_control('void'))->toBe(true);
+    expect(fn () => $element->set_control('unknown', true))->toThrow(InvalidArgumentException::class);
+});
+
+test('set_controls_with_unknown_key_throws', function () {
+    $element = new Element('span');
+    expect(fn () => $element->set_controls(['void' => true, 'unknown_key' => true]))->toThrow(InvalidArgumentException::class);
 });
 
 test('add_class', function () {
