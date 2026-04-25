@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Ozzie\Html\Tests;
 
@@ -6,12 +8,13 @@ use Ozzie\Html\Page;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-class PageTest extends TestCase {
-
+class PageTest extends TestCase
+{
     public function test_construct(): void
     {
-        $reflector   = new ReflectionClass(Page::class);
+        $reflector = new ReflectionClass(Page::class);
         $constructor = $reflector->getConstructor();
+        $this->assertNotNull($constructor);
         $this->assertTrue($constructor->isPrivate());
     }
 
@@ -32,5 +35,4 @@ class PageTest extends TestCase {
         $this->assertInstanceOf(Page::class, $bar);
         $this->assertSame($foo, $bar);
     }
-
 }

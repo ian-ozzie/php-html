@@ -1,15 +1,17 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Ozzie\Html;
 
 use Ozzie\Html\Element\Html;
 
-class Page extends Html {
-
+class Page extends Html
+{
     /**
      * Page instances
      *
-     * @var array<string, static> $attributes
+     * @var array<string, self>
      */
     private static array $pages = [];
 
@@ -18,13 +20,8 @@ class Page extends Html {
         parent::__construct();
     }
 
-    public static function get_instance(string $key): static
+    public static function get_instance(string $key): self
     {
-        if (isset(static::$pages[$key]) === false) {
-            static::$pages[$key] = new static();
-        }
-
-        return static::$pages[$key];
+        return self::$pages[$key] ??= new self;
     }
-
 }

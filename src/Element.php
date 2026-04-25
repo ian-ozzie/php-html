@@ -1,9 +1,13 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Ozzie\Html;
 
-class Element extends Component {
+use Stringable;
 
+class Element extends Component
+{
     /**
      * Known void tags
      * ref: https://developer.mozilla.org/en-US/docs/Glossary/Void_element
@@ -32,7 +36,7 @@ class Element extends Component {
      * @var array<string, bool>
      */
     protected array $controls = [
-        'void'         => false,
+        'void' => false,
         'render_empty' => true,
     ];
 
@@ -55,8 +59,8 @@ class Element extends Component {
      */
     public function __construct(
         protected readonly string $tag,
-        array $attributes=[],
-        mixed $content=null
+        array $attributes = [],
+        mixed $content = null,
     ) {
         if (in_array($this->tag, static::VOID_TAGS) === true) {
             $this->controls['void'] = true;
@@ -74,8 +78,19 @@ class Element extends Component {
     }
 
     /**
-     * @param array<string, bool> $controls
+     * @param array<mixed> $controls
      */
+    public function sanitise_controls(array $controls): static
+    {
+        foreach ($controls as $key => $val) {
+            if (is_string($key) === true && is_bool($val) === true) {
+                $this->set_control($key, $val);
+            }
+        }
+
+        return $this;
+    }
+
     public function set_control(string $key, bool $val): static
     {
         if (isset($this->controls[$key]) === true) {
@@ -103,7 +118,10 @@ class Element extends Component {
 
     public function add_class(string $class): static
     {
-        $this->classes = array_unique(array_merge($this->classes, [$class]));
+        if (empty($class) === false) {
+            $this->classes = array_unique(array_merge($this->classes, [$class]));
+        }
+
         return $this;
     }
 
@@ -117,7 +135,22 @@ class Element extends Component {
         }
 
         $this->classes = array_unique(array_merge($this->classes, $classes));
+
         return $this;
+    }
+
+    public function sanitise_classes(mixed $val): static
+    {
+        if (is_array($val)) {
+            $classes = array_values(array_map(
+                fn ($v): string => (is_scalar($v) || $v instanceof Stringable) ? (string) $v : '',
+                $val,
+            ));
+
+            return $this->add_classes($classes);
+        }
+
+        return $this->add_class((is_scalar($val) || $val instanceof Stringable) ? (string) $val : '');
     }
 
     /**
@@ -130,19 +163,25 @@ class Element extends Component {
         }
 
         $this->classes = $classes;
+
         return $this;
     }
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
     public function add_attribute(string $key, mixed $val): static
     {
-        match ($key) {
-            'class'     => $this->add_classes($val),
-            '_controls' => $this->set_controls($val),
-            default     => $this->attributes[$key] = $val,
-        };
+        if ($key === 'class') {
+            return $this->sanitise_classes($val);
+        }
+
+        if ($key === '_controls') {
+            if (is_array($val) === true) {
+                return $this->sanitise_controls($val);
+            }
+
+            return $this;
+        }
+
+        $this->attributes[$key] = $val;
 
         return $this;
     }
@@ -199,9 +238,12 @@ class Element extends Component {
         ksort($attributes);
         $attrs = '';
         foreach ($attributes as $key => $val) {
-            $attrs .= (is_null($val) === true || $val === '')
-                ? sprintf(' %s', $key)
-                : sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
+            if (is_null($val) === true || $val === '') {
+                $attrs .= sprintf(' %s', $key);
+            } else {
+                $_val = (is_scalar($val) || $val instanceof Stringable) ? (string) $val : '';
+                $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars($_val, ENT_QUOTES));
+            }
         }
 
         return '<'.$this->tag.$attrs.'>';
@@ -211,5 +253,4 @@ class Element extends Component {
     {
         return '</'.$this->tag.'>';
     }
-
 }

@@ -23,16 +23,20 @@
         }
     },
     "require-dev": {
-        "ian-ozzie/phpcs": "^1.0",
-        "phpunit/phpunit": "^11.0"
+        "phpunit/phpunit": "^11.0",
+        "ian-ozzie/pint-config": "^1.0",
+        "phpstan/phpstan": "^2.1"
     },
     "scripts": {
-        "lint": "phpcs",
-        "test": "phpunit"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+        "lint": [
+            "phpstan analyse",
+            "pint --test"
+        ],
+        "lint:fix": [
+            "pint"
+        ],
+        "test": [
+            "phpunit"
+        ]
     }
 }

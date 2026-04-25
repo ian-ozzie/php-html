@@ -1,12 +1,14 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Ozzie\Html\Tests;
 
 use Ozzie\Html\Element;
 use PHPUnit\Framework\TestCase;
 
-class ElementTest extends TestCase {
-
+class ElementTest extends TestCase
+{
     public function test_construct(): void
     {
         $element = new Element('span');
@@ -184,5 +186,4 @@ class ElementTest extends TestCase {
         $element = new Element('span');
         $this->assertSame('</span>', $element->render_close());
     }
-
 }
