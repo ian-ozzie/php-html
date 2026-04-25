@@ -167,6 +167,13 @@ test('add_attribute_controls_non_array', function () {
     expect((string) $element)->toBe('<span></span>');
 });
 
+test('has_attribute', function () {
+    $element = new Element('span');
+    $element->add_attribute('hello', 'world');
+    expect($element->has_attribute('hello'))->toBeTrue();
+    expect($element->has_attribute('unknown'))->toBeFalse();
+});
+
 test('get_attributes', function () {
     $element = new Element('span');
     $element->add_attributes(['foo' => '', 'hello' => 'world']);

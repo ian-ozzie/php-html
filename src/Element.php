@@ -224,6 +224,11 @@ class Element extends Component
         return $this;
     }
 
+    public function has_attribute(string $key): bool
+    {
+        return isset($this->attributes[$key]);
+    }
+
     public function get_attribute(string $key): mixed
     {
         return $this->attributes[$key] ?? null;
