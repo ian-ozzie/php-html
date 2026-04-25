@@ -171,6 +171,12 @@ test('set_attributes', function () {
     expect((string) $element)->toBe('<span hello="world"></span>');
 });
 
+test('set_attributes_resets_classes', function () {
+    $element = new Element('span', ['class' => 'foo']);
+    $element->set_attributes(['class' => 'bar']);
+    expect((string) $element)->toBe('<span class="bar"></span>');
+});
+
 test('render', function () {
     $element = new Element('span');
     expect($element->render())->toBe('<span></span>');

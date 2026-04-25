@@ -222,6 +222,7 @@ class Element extends Component
     public function set_attributes(array $attributes): static
     {
         $this->attributes = [];
+        $this->classes = [];
         $this->add_attributes($attributes);
 
         return $this;
