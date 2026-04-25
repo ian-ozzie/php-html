@@ -134,7 +134,7 @@ class Element extends Component
             $classes = explode(' ', $classes);
         }
 
-        $this->classes = array_unique(array_merge($this->classes, $classes));
+        $this->classes = array_unique(array_merge($this->classes, array_filter($classes, fn (string $v): bool => $v !== '')));
 
         return $this;
     }
@@ -162,7 +162,7 @@ class Element extends Component
             $classes = explode(' ', $classes);
         }
 
-        $this->classes = $classes;
+        $this->classes = array_unique(array_filter($classes, fn (string $v): bool => $v !== ''));
 
         return $this;
     }

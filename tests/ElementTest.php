@@ -96,6 +96,24 @@ test('set_classes_with_string', function () {
     expect((string) $element)->toBe('<span class="foo bar"></span>');
 });
 
+test('set_classes_deduplicates', function () {
+    $element = new Element('span');
+    $element->set_classes(['foo', 'bar', 'foo']);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
+
+test('set_classes_filters_empty_strings', function () {
+    $element = new Element('span');
+    $element->set_classes(['foo', '', 'bar']);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
+
+test('add_classes_filters_empty_strings', function () {
+    $element = new Element('span');
+    $element->add_classes(['foo', '', 'bar']);
+    expect((string) $element)->toBe('<span class="foo bar"></span>');
+});
+
 test('add_attribute', function () {
     $element = new Element('span');
     $element->add_attribute('hello', 'world');
