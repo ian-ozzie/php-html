@@ -65,6 +65,18 @@ test('set_controls_with_unknown_key_throws', function () {
     expect(fn () => $element->set_controls(['void' => true, 'unknown_key' => true]))->toThrow(InvalidArgumentException::class);
 });
 
+test('get_classes', function () {
+    $element = new Element('span', ['class' => 'foo']);
+    $element->add_class('bar');
+    expect($element->get_classes())->toBe(['foo', 'bar']);
+});
+
+test('has_class', function () {
+    $element = new Element('span', ['class' => 'foo']);
+    expect($element->has_class('foo'))->toBeTrue();
+    expect($element->has_class('bar'))->toBeFalse();
+});
+
 test('add_class', function () {
     $element = new Element('span');
     $element->add_class('foo');

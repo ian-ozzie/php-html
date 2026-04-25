@@ -129,6 +129,19 @@ class Element extends Component
         return $this;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function get_classes(): array
+    {
+        return $this->classes;
+    }
+
+    public function has_class(string $class): bool
+    {
+        return in_array($class, $this->classes, true);
+    }
+
     public function add_class(string $class): static
     {
         if (empty($class) === false) {
