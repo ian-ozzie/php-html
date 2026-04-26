@@ -169,11 +169,15 @@ class Element extends Component
     {
         if (is_array($val)) {
             $classes = array_values(array_map(
-                fn ($v): string => (is_scalar($v) || $v instanceof Stringable) ? (string) $v : '',
+                fn ($v): string => (is_scalar($v) && is_bool($v) === false || $v instanceof Stringable) ? (string) $v : '',
                 $val,
             ));
 
             return $this->add_classes($classes);
+        }
+
+        if (is_bool($val) === true) {
+            return $this;
         }
 
         return $this->add_class((is_scalar($val) || $val instanceof Stringable) ? (string) $val : '');

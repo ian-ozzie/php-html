@@ -135,6 +135,19 @@ test('add_classes_filters_empty_strings', function () {
     expect((string) $element)->toBe('<span class="foo bar"></span>');
 });
 
+test('add_class_skips_boolean_values', function () {
+    $element = new Element('span');
+    $element->add_attribute('class', true);
+    $element->add_attribute('class', false);
+    expect($element->get_classes())->toBe([]);
+});
+
+test('add_classes_skips_boolean_values_in_array', function () {
+    $element = new Element('span');
+    $element->add_attribute('class', ['foo', true, 'bar', false]);
+    expect($element->get_classes())->toBe(['foo', 'bar']);
+});
+
 test('add_attribute', function () {
     $element = new Element('span');
     $element->add_attribute('hello', 'world');
