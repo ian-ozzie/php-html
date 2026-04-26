@@ -270,17 +270,23 @@ class Element extends Component
         ksort($attributes);
         $attrs = '';
         foreach ($attributes as $key => $val) {
-            if (is_null($val) === true || $val === '') {
-                $attrs .= sprintf(' %s', $key);
-            } else {
-                if (is_scalar($val) === false && $val instanceof Stringable === false) {
-                    throw new InvalidArgumentException(
-                        $this::class.'->render_open(): attribute "'.$key.'" value ('.gettype($val).') must be scalar or Stringable',
-                    );
-                }
-
-                $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
+            if ($val === null || $val === false) {
+                continue;
             }
+
+            if ($val === true) {
+                $attrs .= sprintf(' %s', $key);
+
+                continue;
+            }
+
+            if (is_scalar($val) === false && $val instanceof Stringable === false) {
+                throw new InvalidArgumentException(
+                    $this::class.'->render_open(): attribute "'.$key.'" value ('.gettype($val).') must be scalar or Stringable',
+                );
+            }
+
+            $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
         }
 
         return '<'.$this->tag.$attrs.'>';

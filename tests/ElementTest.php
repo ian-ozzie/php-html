@@ -141,23 +141,30 @@ test('add_attribute', function () {
     expect((string) $element)->toBe('<span hello="world"></span>');
 });
 
-test('add_attribute_null_empty', function () {
+test('add_attribute_skips_null_and_false', function () {
     $element = new Element('span');
     $element->add_attribute('hello', null);
-    $element->add_attribute('world', '');
-    expect((string) $element)->toBe('<span hello world></span>');
+    $element->add_attribute('world', false);
+    expect((string) $element)->toBe('<span></span>');
+});
+
+test('add_attribute_boolean_and_empty_string', function () {
+    $element = new Element('span');
+    $element->add_attribute('checked', true);
+    $element->add_attribute('readonly', '');
+    expect((string) $element)->toBe('<span checked readonly=""></span>');
 });
 
 test('add_attributes', function () {
     $element = new Element('span');
     $element->add_attributes(['foo' => '', 'hello' => 'world']);
-    expect((string) $element)->toBe('<span foo hello="world"></span>');
+    expect((string) $element)->toBe('<span foo="" hello="world"></span>');
 });
 
 test('add_attributes_order', function () {
     $element = new Element('span');
-    $element->add_attributes(['hello' => 'world', 'foo' => '']);
-    expect((string) $element)->toBe('<span foo hello="world"></span>');
+    $element->add_attributes(['hello' => 'world', 'foo' => '', 'bar' => true]);
+    expect((string) $element)->toBe('<span bar foo="" hello="world"></span>');
 });
 
 test('add_attribute_controls_non_array', function () {
@@ -226,7 +233,7 @@ test('render_open', function () {
     $element->add_attribute('hello', 'world');
     expect($element->render_open())->toBe('<span class="test" hello="world">');
     $element->add_attribute('foo', '');
-    expect($element->render_open())->toBe('<span class="test" foo hello="world">');
+    expect($element->render_open())->toBe('<span class="test" foo="" hello="world">');
 });
 
 test('render_close', function () {
