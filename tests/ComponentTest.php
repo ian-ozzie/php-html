@@ -24,54 +24,27 @@ test('add_content', function () {
     expect((string) $component)->toBe('foobar');
 });
 
-test('add_content_with_append', function () {
+test('prepend_content', function () {
     $component = new Component;
     $component
         ->add_content('foo')
-        ->add_content('bar', true);
-
-    expect((string) $component)->toBe('foobar');
-});
-
-test('add_content_with_prepend', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->add_content('bar', false);
+        ->prepend_content('bar');
 
     expect((string) $component)->toBe('barfoo');
 });
 
-test('content_append', function () {
+test('set_content', function () {
     $component = new Component;
     $component
         ->add_content('foo')
-        ->content_append('bar');
-
-    expect((string) $component)->toBe('foobar');
-});
-
-test('content_prepend', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->content_prepend('bar');
-
-    expect((string) $component)->toBe('barfoo');
-});
-
-test('content_set', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->content_set('bar');
+        ->set_content('bar');
 
     expect((string) $component)->toBe('bar');
 });
 
-test('content_set_array', function () {
+test('set_content_array', function () {
     $component = new Component;
-    $component->content_set(['foo', 'bar', 'baz']);
+    $component->set_content(['foo', 'bar', 'baz']);
     expect((string) $component)->toBe('foobarbaz');
 });
 
@@ -145,9 +118,8 @@ test('chaining_functions', function () {
     $component = new Component;
 
     expect($component->add_content('foo'))->toBe($component);
-    expect($component->content_append('foo'))->toBe($component);
-    expect($component->content_prepend('foo'))->toBe($component);
-    expect($component->content_set('foo'))->toBe($component);
+    expect($component->prepend_content('foo'))->toBe($component);
+    expect($component->set_content('foo'))->toBe($component);
 
     expect($component->add_element('foo'))->toBe($component);
 });

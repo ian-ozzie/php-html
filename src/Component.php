@@ -21,28 +21,21 @@ class Component implements Stringable
         return $this->render();
     }
 
-    public function add_content(mixed $content, bool $append = true): static
-    {
-        $append === true ? $this->content_append($content) : $this->content_prepend($content);
-
-        return $this;
-    }
-
-    public function content_append(mixed $content): static
+    public function add_content(mixed $content): static
     {
         $this->render_content[] = $content;
 
         return $this;
     }
 
-    public function content_prepend(mixed $content): static
+    public function prepend_content(mixed $content): static
     {
         array_unshift($this->render_content, $content);
 
         return $this;
     }
 
-    public function content_set(mixed $content): static
+    public function set_content(mixed $content): static
     {
         $this->render_content = is_array($content) === true ? array_values($content) : [$content];
 

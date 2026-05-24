@@ -13,11 +13,11 @@ test('content', function () {
     $element = new Html;
     $element->add_content('Hello World');
     expect((string) $element)->toBe('<!DOCTYPE html><html><body>Hello World</body></html>');
-    $element->content_append('!');
+    $element->add_content('!');
     expect((string) $element)->toBe('<!DOCTYPE html><html><body>Hello World!</body></html>');
-    $element->content_prepend('!');
+    $element->prepend_content('!');
     expect((string) $element)->toBe('<!DOCTYPE html><html><body>!Hello World!</body></html>');
-    $element->content_set('foo');
+    $element->set_content('foo');
     expect((string) $element)->toBe('<!DOCTYPE html><html><body>foo</body></html>');
 });
 

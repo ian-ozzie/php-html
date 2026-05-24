@@ -34,30 +34,23 @@ class Html extends Element
         $this->noscript = $this->body->new_element('noscript', ['_controls' => ['render_empty' => false]]);
     }
 
-    public function add_content(mixed $content, bool $append = true): static
+    public function add_content(mixed $content): static
     {
-        $this->body->add_content($content, $append);
+        $this->body->add_content($content);
 
         return $this;
     }
 
-    public function content_append(mixed $content): static
+    public function prepend_content(mixed $content): static
     {
-        $this->body->content_append($content);
+        $this->body->prepend_content($content);
 
         return $this;
     }
 
-    public function content_prepend(mixed $content): static
+    public function set_content(mixed $content): static
     {
-        $this->body->content_prepend($content);
-
-        return $this;
-    }
-
-    public function content_set(mixed $content): static
-    {
-        $this->body->content_set($content);
+        $this->body->set_content($content);
 
         return $this;
     }
