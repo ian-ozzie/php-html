@@ -39,7 +39,7 @@
             "pest"
         ],
         "test:coverage": [
-            "pest --coverage"
+            "pest --coverage --min=100"
         ]
     },
     "config": {
