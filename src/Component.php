@@ -16,6 +16,10 @@ class Component implements Stringable
      */
     protected array $render_content = [];
 
+    public bool $cache_render = false;
+
+    protected ?string $cached_output = null;
+
     public function __toString(): string
     {
         return $this->render();
@@ -44,6 +48,10 @@ class Component implements Stringable
 
     public function render(): string
     {
+        if ($this->cache_render === true) {
+            return $this->cached_output ??= $this->render_mixed($this->render_content);
+        }
+
         return $this->render_mixed($this->render_content);
     }
 

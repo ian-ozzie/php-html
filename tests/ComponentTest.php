@@ -123,3 +123,100 @@ test('chaining_functions', function () {
 
     expect($component->add_element('foo'))->toBe($component);
 });
+
+test('cache_render_defaults_to_false', function () {
+    $component = new Component;
+    expect($component->cache_render)->toBeFalse();
+});
+
+test('cache_render_returns_fresh_output_when_disabled', function () {
+    $component = new Component;
+    $component->add_content('foo');
+    expect($component->render())->toBe('foo');
+
+    $component->add_content('bar');
+    expect($component->render())->toBe('foobar');
+});
+
+test('cache_render_returns_cached_output_when_enabled', function () {
+    $component = new Component;
+    $component->cache_render = true;
+    $component->add_content('foo');
+    expect($component->render())->toBe('foo');
+
+    $component->add_content('bar');
+    expect($component->render())->toBe('foo');
+});
+
+test('cache_render_same_instance_rendered_twice', function () {
+    $component = new Component;
+    $component->cache_render = true;
+    $component->add_content('hello');
+
+    $parent = new Component;
+    $parent->add_content($component);
+    $parent->add_content($component);
+
+    expect($parent->render())->toBe('hellohello');
+});
+
+test('cache_render_prevents_render_time_composition_duplication', function () {
+    $component = new class extends Component
+    {
+        public function render(): string
+        {
+            $this->add_content('composed ');
+
+            return parent::render();
+        }
+    };
+
+    $component->cache_render = true;
+    expect($component->render())->toBe('composed ');
+    expect($component->render())->toBe('composed ');
+});
+
+test('cache_render_without_cache_duplicates_render_time_composition', function () {
+    $component = new class extends Component
+    {
+        public function render(): string
+        {
+            $this->add_content('composed ');
+
+            return parent::render();
+        }
+    };
+
+    expect($component->render())->toBe('composed ');
+    expect($component->render())->toBe('composed composed ');
+});
+
+test('cache_render_empty_first_render_is_sticky', function () {
+    $component = new Component;
+    $component->cache_render = true;
+    expect($component->render())->toBe('');
+
+    $component->add_content('foo');
+    expect($component->render())->toBe('');
+});
+
+test('cache_render_content_mutation_after_warm_cache_is_ignored', function () {
+    $component = new Component;
+    $component->cache_render = true;
+    $component->add_content('foo');
+    $component->render();
+
+    $component->set_content('bar');
+    expect($component->render())->toBe('foo');
+});
+
+test('cache_render_toggled_off_returns_live_content', function () {
+    $component = new Component;
+    $component->cache_render = true;
+    $component->add_content('foo');
+    $component->render();
+
+    $component->cache_render = false;
+    $component->add_content('bar');
+    expect($component->render())->toBe('foobar');
+});
