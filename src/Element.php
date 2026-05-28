@@ -59,7 +59,7 @@ class Element extends Component
      * @param array<string, mixed> $attributes
      */
     public function __construct(
-        protected readonly string $tag,
+        public readonly string $tag,
         array $attributes = [],
         mixed $content = null,
     ) {
