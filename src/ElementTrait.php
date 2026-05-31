@@ -42,7 +42,7 @@ trait ElementTrait
     /**
      * @var array<string, mixed>
      */
-    protected array $attributes = [];
+    protected array $html_attributes = [];
 
     /**
      * @var array<int, string>
@@ -192,7 +192,7 @@ trait ElementTrait
             return $this;
         }
 
-        $this->attributes[$key] = $val;
+        $this->html_attributes[$key] = $val;
 
         return $this;
     }
@@ -211,12 +211,12 @@ trait ElementTrait
 
     public function has_attribute(string $key): bool
     {
-        return isset($this->attributes[$key]);
+        return isset($this->html_attributes[$key]);
     }
 
     public function get_attribute(string $key): mixed
     {
-        return $this->attributes[$key] ?? null;
+        return $this->html_attributes[$key] ?? null;
     }
 
     /**
@@ -224,7 +224,7 @@ trait ElementTrait
      */
     public function set_attributes(array $attributes): static
     {
-        $this->attributes = [];
+        $this->html_attributes = [];
         $this->classes = [];
         $this->add_attributes($attributes);
 
@@ -245,38 +245,73 @@ trait ElementTrait
         return $this->render_open().$content.$this->render_close();
     }
 
-    protected function render_open(): string
+    protected function sanitise_attribute(string $key, mixed $val): string|true|null
     {
-        $attributes = $this->attributes;
-        if (empty($this->classes) === false) {
-            $classes = $this->classes;
-            sort($classes);
-            $attributes = array_merge($attributes, ['class' => implode(' ', $classes)]);
+        if ($val === null || $val === false) {
+            return null;
         }
 
-        ksort($attributes);
-        $attrs = '';
-        foreach ($attributes as $key => $val) {
-            if ($val === null || $val === false) {
+        if ($val === true) {
+            return true;
+        }
+
+        if (is_scalar($val) === false && $val instanceof Stringable === false) {
+            throw new InvalidArgumentException(
+                $this::class.'->sanitise_attribute(): attribute "'.$key.'" value ('.gettype($val).') must be scalar or Stringable',
+            );
+        }
+
+        return (string) $val;
+    }
+
+    /**
+     * @return array<string, string|true>
+     */
+    protected function prepare_attributes(): array
+    {
+        $attributes = [];
+        foreach ($this->html_attributes as $key => $val) {
+            $sanitised = $this->sanitise_attribute($key, $val);
+            if ($sanitised === null) {
                 continue;
             }
 
+            $attributes[$key] = $sanitised === true ? true : htmlspecialchars($sanitised, ENT_QUOTES);
+        }
+
+        return $attributes;
+    }
+
+    protected function render_attributes(): string
+    {
+        /** @var array<string, string|true> $attributes */
+        $attributes = $this->prepare_attributes();
+
+        if (empty($this->classes) === false) {
+            $classes = $this->classes;
+            sort($classes);
+            $attributes['class'] = implode(' ', $classes);
+        }
+
+        ksort($attributes);
+
+        $attrs = '';
+        foreach ($attributes as $key => $val) {
             if ($val === true) {
                 $attrs .= sprintf(' %s', $key);
 
                 continue;
             }
 
-            if (is_scalar($val) === false && $val instanceof Stringable === false) {
-                throw new InvalidArgumentException(
-                    $this::class.'->render_open(): attribute "'.$key.'" value ('.gettype($val).') must be scalar or Stringable',
-                );
-            }
-
-            $attrs .= sprintf(' %s="%s"', $key, htmlspecialchars((string) $val, ENT_QUOTES));
+            $attrs .= sprintf(' %s="%s"', $key, $val);
         }
 
-        return '<'.$this->tag.$attrs.'>';
+        return $attrs;
+    }
+
+    protected function render_open(): string
+    {
+        return '<'.$this->tag.$this->render_attributes().'>';
     }
 
     protected function render_close(): string
