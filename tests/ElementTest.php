@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use Ozzie\Html\ComponentTrait;
 use Ozzie\Html\Element;
+use Ozzie\Html\ElementInterface;
+use Ozzie\Html\ElementTrait;
 
 test('construct', function () {
     $element = new Element('span');
@@ -270,4 +273,18 @@ test('render_non_stringable_attribute_throws', function () {
     $element = new Element('span');
     $element->add_attribute('foo', new stdClass);
     expect(fn () => $element->render())->toThrow(InvalidArgumentException::class);
+});
+
+test('traits compose without extending Component or Element', function () {
+    $widget = new class('div') implements ElementInterface
+    {
+        use ComponentTrait, ElementTrait {
+            ElementTrait::render insteadof ComponentTrait;
+        }
+
+        public function __construct(public readonly string $tag) {}
+    };
+
+    $widget->add_content('hello');
+    expect((string) $widget)->toBe('<div>hello</div>');
 });
