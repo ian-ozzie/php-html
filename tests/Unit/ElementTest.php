@@ -246,6 +246,38 @@ describe('add_attribute()', function () {
         expect($result)->toBe($element);
         expect((string) $element)->toBe('<span></span>');
     });
+
+    describe('with class key', function () {
+        it('splits a space-separated string into multiple classes', function () {
+            $element = new Element('span');
+            $element->add_attribute('class', 'foo bar');
+
+            expect($element->get_classes())->toBe(['foo', 'bar']);
+        });
+
+        it('splits a space-separated Stringable into multiple classes', function () {
+            $element = new Element('span');
+            $stringable = new class('foo bar') implements Stringable
+            {
+                public function __construct(private string $val) {}
+
+                public function __toString(): string
+                {
+                    return $this->val;
+                }
+            };
+            $element->add_attribute('class', $stringable);
+
+            expect($element->get_classes())->toBe(['foo', 'bar']);
+        });
+
+        it('ignores a non-scalar non-stringable non-array value', function () {
+            $element = new Element('span');
+            $element->add_attribute('class', new stdClass);
+
+            expect($element->get_classes())->toBe([]);
+        });
+    });
 });
 
 describe('add_attributes()', function () {

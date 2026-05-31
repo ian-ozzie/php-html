@@ -161,7 +161,7 @@ trait ElementTrait
             return $this;
         }
 
-        return $this->add_class((is_scalar($val) || $val instanceof Stringable) ? (string) $val : '');
+        return $this->add_classes((is_scalar($val) || $val instanceof Stringable) ? (string) $val : '');
     }
 
     /**
