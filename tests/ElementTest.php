@@ -9,6 +9,11 @@ test('construct', function () {
     expect((string) $element)->toBe('<span></span>');
 });
 
+test('get_tag', function () {
+    $element = new Element('span');
+    expect($element->get_tag())->toBe('span');
+});
+
 test('element_with_attribute', function () {
     $element = new Element('span', ['hello' => 'world']);
     expect((string) $element)->toBe('<span hello="world"></span>');

@@ -7,7 +7,7 @@ namespace Ozzie\Html;
 use InvalidArgumentException;
 use Stringable;
 
-class Component implements Stringable
+class Component implements ComponentInterface
 {
     /**
      * Component content
@@ -75,7 +75,7 @@ class Component implements Stringable
     /**
      * @param array<string, mixed> $attributes
      */
-    public static function element(string $tag, array $attributes = [], mixed $content = null): Element
+    public static function element(string $tag, array $attributes = [], mixed $content = null): ElementInterface
     {
         return new Element($tag, $attributes, $content);
     }
@@ -93,7 +93,7 @@ class Component implements Stringable
     /**
      * @param array<string, mixed> $attributes
      */
-    public function new_element(string $tag, array $attributes = [], mixed $content = null): Element
+    public function new_element(string $tag, array $attributes = [], mixed $content = null): ElementInterface
     {
         $element = new Element($tag, $attributes, $content);
         $this->add_content($element);

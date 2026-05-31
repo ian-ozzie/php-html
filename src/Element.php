@@ -7,7 +7,7 @@ namespace Ozzie\Html;
 use InvalidArgumentException;
 use Stringable;
 
-class Element extends Component
+class Element extends Component implements ElementInterface
 {
     /**
      * Known void tags
@@ -71,6 +71,11 @@ class Element extends Component
         if (isset($content) === true) {
             $this->add_content($content);
         }
+    }
+
+    public function get_tag(): string
+    {
+        return $this->tag;
     }
 
     public function get_control(string $key): bool

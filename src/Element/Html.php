@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Ozzie\Html\Element;
 
 use Ozzie\Html\Element;
+use Ozzie\Html\ElementInterface;
 
 class Html extends Element
 {
-    public Element $head;
+    public ElementInterface $head;
 
-    public Element $title;
+    public ElementInterface $title;
 
-    public Element $body;
+    public ElementInterface $body;
 
-    public Element $noscript;
+    public ElementInterface $noscript;
 
     public string $doctype = 'html';
 
@@ -68,7 +69,7 @@ class Html extends Element
     /**
      * @param array<string, mixed> $attributes
      */
-    public function new_element(string $tag, array $attributes = [], mixed $content = null): Element
+    public function new_element(string $tag, array $attributes = [], mixed $content = null): ElementInterface
     {
         return $this->body->new_element($tag, $attributes, $content);
     }
