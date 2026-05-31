@@ -91,48 +91,60 @@ test('add_class_with_constructor', function () {
 test('add_classes', function () {
     $element = new Element('span');
     $element->add_classes(['foo', 'bar']);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('add_classes_with_string', function () {
     $element = new Element('span');
     $element->add_classes('foo bar');
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('add_classes_with_constructor', function () {
     $element = new Element('span', ['class' => ['foo', 'bar']]);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('set_classes', function () {
     $element = new Element('span', ['class' => 'baz']);
     $element->set_classes(['foo', 'bar']);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('set_classes_with_string', function () {
     $element = new Element('span', ['class' => 'baz']);
     $element->set_classes('foo bar');
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('set_classes_deduplicates', function () {
     $element = new Element('span');
     $element->set_classes(['foo', 'bar', 'foo']);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('set_classes_filters_empty_strings', function () {
     $element = new Element('span');
     $element->set_classes(['foo', '', 'bar']);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
 });
 
 test('add_classes_filters_empty_strings', function () {
     $element = new Element('span');
     $element->add_classes(['foo', '', 'bar']);
-    expect((string) $element)->toBe('<span class="foo bar"></span>');
+    expect((string) $element)->toBe('<span class="bar foo"></span>');
+});
+
+test('classes_are_sorted_in_render_output', function () {
+    $element = new Element('span');
+    $element->add_classes(['zebra', 'alpha', 'mango']);
+    expect((string) $element)->toBe('<span class="alpha mango zebra"></span>');
+});
+
+test('get_classes_preserves_insertion_order', function () {
+    $element = new Element('span');
+    $element->add_classes(['zebra', 'alpha', 'mango']);
+    expect($element->get_classes())->toBe(['zebra', 'alpha', 'mango']);
 });
 
 test('add_class_skips_boolean_values', function () {

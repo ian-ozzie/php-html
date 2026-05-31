@@ -268,7 +268,9 @@ class Element extends Component
     {
         $attributes = $this->attributes;
         if (empty($this->classes) === false) {
-            $attributes = array_merge($attributes, ['class' => implode(' ', $this->classes)]);
+            $classes = $this->classes;
+            sort($classes);
+            $attributes = array_merge($attributes, ['class' => implode(' ', $classes)]);
         }
 
         ksort($attributes);
