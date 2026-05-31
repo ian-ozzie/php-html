@@ -7,284 +7,366 @@ use Ozzie\Html\Element;
 use Ozzie\Html\ElementInterface;
 use Ozzie\Html\ElementTrait;
 
-test('construct', function () {
-    $element = new Element('span');
-    expect((string) $element)->toBe('<span></span>');
+describe('__construct()', function () {
+    it('renders an empty tag by default', function () {
+        $element = new Element('span');
+
+        expect((string) $element)->toBe('<span></span>');
+    });
+
+    it('applies initial attributes', function () {
+        $element = new Element('span', ['hello' => 'world']);
+
+        expect((string) $element)->toBe('<span hello="world"></span>');
+    });
+
+    it('applies initial content', function () {
+        $element = new Element('span', content: 'foo');
+
+        expect((string) $element)->toBe('<span>foo</span>');
+    });
+
+    it('applies initial attributes and content together', function () {
+        $element = new Element('span', ['hello' => 'world'], 'foo');
+
+        expect((string) $element)->toBe('<span hello="world">foo</span>');
+    });
+
+    it('marks known void tags as void elements', function () {
+        $element = new Element('br');
+
+        expect($element->render())->toBe('<br>');
+    });
 });
 
-test('get_tag', function () {
-    $element = new Element('span');
-    expect($element->get_tag())->toBe('span');
+describe('get_tag()', function () {
+    it('returns the element tag name', function () {
+        $element = new Element('span');
+
+        expect($element->get_tag())->toBe('span');
+    });
 });
 
-test('element_with_attribute', function () {
-    $element = new Element('span', ['hello' => 'world']);
-    expect((string) $element)->toBe('<span hello="world"></span>');
+describe('get_control()', function () {
+    it('returns default control values', function () {
+        $element = new Element('span');
+
+        expect($element->get_control('void'))->toBe(false);
+        expect($element->get_control('render_empty'))->toBe(true);
+    });
+
+    it('returns controls provided through constructor attributes', function () {
+        $element = new Element('span', ['_controls' => ['void' => true]]);
+
+        expect($element->get_control('void'))->toBe(true);
+        expect($element->get_control('render_empty'))->toBe(true);
+    });
+
+    it('throws when the control key is unknown', function () {
+        $element = new Element('span');
+
+        expect(fn () => $element->get_control('unknown'))->toThrow(InvalidArgumentException::class);
+    });
 });
 
-test('construct_with_content', function () {
-    $element = new Element('span', content: 'foo');
-    expect((string) $element)->toBe('<span>foo</span>');
+describe('set_control()', function () {
+    it('updates one control without changing the others', function () {
+        $element = new Element('span');
+        $element->set_control('void', true);
+
+        expect($element->get_control('void'))->toBe(true);
+        expect($element->get_control('render_empty'))->toBe(true);
+    });
+
+    it('throws when the control key is unknown', function () {
+        $element = new Element('span');
+
+        expect(fn () => $element->set_control('unknown', true))->toThrow(InvalidArgumentException::class);
+    });
 });
 
-test('construct_with_attribute_and_content', function () {
-    $element = new Element('span', ['hello' => 'world'], 'foo');
-    expect((string) $element)->toBe('<span hello="world">foo</span>');
+describe('set_controls()', function () {
+    it('updates multiple controls at once', function () {
+        $element = new Element('span');
+        $element->set_controls(['void' => true, 'render_empty' => false]);
+
+        expect($element->get_control('void'))->toBe(true);
+        expect($element->get_control('render_empty'))->toBe(false);
+    });
+
+    it('throws when any control key is unknown', function () {
+        $element = new Element('span');
+
+        expect(fn () => $element->set_controls(['void' => true, 'unknown_key' => true]))->toThrow(InvalidArgumentException::class);
+    });
 });
 
-test('get_control', function () {
-    $element = new Element('span');
-    expect($element->get_control('void'))->toBe(false);
-    expect($element->get_control('render_empty'))->toBe(true);
+describe('get_classes()', function () {
+    it('returns classes in insertion order', function () {
+        $element = new Element('span', ['class' => 'foo']);
+        $element->add_class('bar');
+
+        expect($element->get_classes())->toBe(['foo', 'bar']);
+    });
+
+    it('keeps insertion order even though rendering sorts classes', function () {
+        $element = new Element('span');
+        $element->add_classes(['zebra', 'alpha', 'mango']);
+
+        expect($element->get_classes())->toBe(['zebra', 'alpha', 'mango']);
+    });
 });
 
-test('get_control_unknown_key_throws', function () {
-    $element = new Element('span');
-    expect(fn () => $element->get_control('unknown'))->toThrow(InvalidArgumentException::class);
+describe('has_class()', function () {
+    it('detects whether a class has been added', function () {
+        $element = new Element('span', ['class' => 'foo']);
+
+        expect($element->has_class('foo'))->toBeTrue();
+        expect($element->has_class('bar'))->toBeFalse();
+    });
 });
 
-test('get_control_with_constructor', function () {
-    $element = new Element('span', ['_controls' => ['void' => true]]);
-    expect($element->get_control('void'))->toBe(true);
-    expect($element->get_control('render_empty'))->toBe(true);
+describe('add_class()', function () {
+    it('adds a single class to rendered attributes', function () {
+        $element = new Element('span');
+        $element->add_class('foo');
+
+        expect((string) $element)->toBe('<span class="foo"></span>');
+    });
+
+    it('accepts classes supplied through constructor attributes', function () {
+        $element = new Element('span', ['class' => 'foo']);
+
+        expect((string) $element)->toBe('<span class="foo"></span>');
+    });
+
+    it('ignores boolean class values', function () {
+        $element = new Element('span');
+        $element->add_attribute('class', true);
+        $element->add_attribute('class', false);
+
+        expect($element->get_classes())->toBe([]);
+    });
 });
 
-test('set_control', function () {
-    $element = new Element('span');
-    $element->set_control('void', true);
-    expect($element->get_control('void'))->toBe(true);
-    expect($element->get_control('render_empty'))->toBe(true);
+describe('add_classes()', function () {
+    it('adds multiple classes from an array', function () {
+        $element = new Element('span');
+        $element->add_classes(['foo', 'bar']);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('adds multiple classes from a space separated string', function () {
+        $element = new Element('span');
+        $element->add_classes('foo bar');
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('accepts class arrays supplied through constructor attributes', function () {
+        $element = new Element('span', ['class' => ['foo', 'bar']]);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('filters empty strings', function () {
+        $element = new Element('span');
+        $element->add_classes(['foo', '', 'bar']);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('skips boolean values in class arrays', function () {
+        $element = new Element('span');
+        $element->add_attribute('class', ['foo', true, 'bar', false]);
+
+        expect($element->get_classes())->toBe(['foo', 'bar']);
+    });
 });
 
-test('set_controls', function () {
-    $element = new Element('span');
-    $element->set_controls(['void' => true, 'render_empty' => false]);
-    expect($element->get_control('void'))->toBe(true);
-    expect($element->get_control('render_empty'))->toBe(false);
+describe('set_classes()', function () {
+    it('replaces existing classes from an array', function () {
+        $element = new Element('span', ['class' => 'baz']);
+        $element->set_classes(['foo', 'bar']);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('replaces existing classes from a space separated string', function () {
+        $element = new Element('span', ['class' => 'baz']);
+        $element->set_classes('foo bar');
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('deduplicates class names', function () {
+        $element = new Element('span');
+        $element->set_classes(['foo', 'bar', 'foo']);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
+
+    it('filters empty class names', function () {
+        $element = new Element('span');
+        $element->set_classes(['foo', '', 'bar']);
+
+        expect((string) $element)->toBe('<span class="bar foo"></span>');
+    });
 });
 
-test('set_control_unknown_key_throws', function () {
-    $element = new Element('span');
-    expect(fn () => $element->set_control('unknown', true))->toThrow(InvalidArgumentException::class);
+describe('add_attribute()', function () {
+    it('adds a scalar attribute', function () {
+        $element = new Element('span');
+        $element->add_attribute('hello', 'world');
+
+        expect((string) $element)->toBe('<span hello="world"></span>');
+    });
+
+    it('skips null and false attributes when rendering', function () {
+        $element = new Element('span');
+        $element->add_attribute('hello', null);
+        $element->add_attribute('world', false);
+
+        expect((string) $element)->toBe('<span></span>');
+    });
+
+    it('renders true boolean attributes and empty string attributes', function () {
+        $element = new Element('span');
+        $element->add_attribute('checked', true);
+        $element->add_attribute('readonly', '');
+
+        expect((string) $element)->toBe('<span checked readonly=""></span>');
+    });
+
+    it('ignores non-array control attributes', function () {
+        $element = new Element('span');
+        $result = $element->add_attribute('_controls', 'invalid');
+
+        expect($result)->toBe($element);
+        expect((string) $element)->toBe('<span></span>');
+    });
 });
 
-test('set_controls_with_unknown_key_throws', function () {
-    $element = new Element('span');
-    expect(fn () => $element->set_controls(['void' => true, 'unknown_key' => true]))->toThrow(InvalidArgumentException::class);
+describe('add_attributes()', function () {
+    it('adds several attributes at once', function () {
+        $element = new Element('span');
+        $element->add_attributes(['foo' => '', 'hello' => 'world']);
+
+        expect((string) $element)->toBe('<span foo="" hello="world"></span>');
+    });
+
+    it('renders attributes sorted by key', function () {
+        $element = new Element('span');
+        $element->add_attributes(['hello' => 'world', 'foo' => '', 'bar' => true]);
+
+        expect((string) $element)->toBe('<span bar foo="" hello="world"></span>');
+    });
 });
 
-test('get_classes', function () {
-    $element = new Element('span', ['class' => 'foo']);
-    $element->add_class('bar');
-    expect($element->get_classes())->toBe(['foo', 'bar']);
+describe('has_attribute()', function () {
+    it('detects whether an attribute has been added', function () {
+        $element = new Element('span');
+        $element->add_attribute('hello', 'world');
+
+        expect($element->has_attribute('hello'))->toBeTrue();
+        expect($element->has_attribute('unknown'))->toBeFalse();
+    });
 });
 
-test('has_class', function () {
-    $element = new Element('span', ['class' => 'foo']);
-    expect($element->has_class('foo'))->toBeTrue();
-    expect($element->has_class('bar'))->toBeFalse();
+describe('get_attribute()', function () {
+    it('returns stored attribute values and null for missing attributes', function () {
+        $element = new Element('span');
+        $element->add_attributes(['foo' => '', 'hello' => 'world']);
+
+        expect($element->get_attribute('foo'))->toBe('');
+        expect($element->get_attribute('hello'))->toBe('world');
+        expect($element->get_attribute('unknown'))->toBeNull();
+    });
 });
 
-test('add_class', function () {
-    $element = new Element('span');
-    $element->add_class('foo');
-    expect((string) $element)->toBe('<span class="foo"></span>');
+describe('set_attributes()', function () {
+    it('replaces existing attributes', function () {
+        $element = new Element('span', ['foo' => 'bar']);
+        expect((string) $element)->toBe('<span foo="bar"></span>');
+
+        $element->set_attributes(['hello' => 'world']);
+
+        expect((string) $element)->toBe('<span hello="world"></span>');
+    });
+
+    it('resets classes while replacing attributes', function () {
+        $element = new Element('span', ['class' => 'foo']);
+        $element->set_attributes(['class' => 'bar']);
+
+        expect((string) $element)->toBe('<span class="bar"></span>');
+    });
 });
 
-test('add_class_with_constructor', function () {
-    $element = new Element('span', ['class' => 'foo']);
-    expect((string) $element)->toBe('<span class="foo"></span>');
+describe('render()', function () {
+    it('renders open and closing tags for normal elements', function () {
+        $element = new Element('span');
+
+        expect($element->render())->toBe('<span></span>');
+    });
+
+    it('renders only an opening tag for manual void elements', function () {
+        $element = new Element('span', ['_controls' => ['void' => true]]);
+
+        expect($element->render())->toBe('<span>');
+    });
+
+    it('can omit empty non-void elements', function () {
+        $element = new Element('span');
+        expect($element->render())->toBe('<span></span>');
+
+        $element->set_control('render_empty', false);
+
+        expect($element->render())->toBe('');
+    });
+
+    it('sorts classes and attributes in rendered output', function () {
+        $element = new Element('span');
+        expect($element->render())->toBe('<span></span>');
+
+        $element->add_class('test');
+        expect($element->render())->toBe('<span class="test"></span>');
+
+        $element->add_attribute('hello', 'world');
+        expect($element->render())->toBe('<span class="test" hello="world"></span>');
+
+        $element->add_attribute('foo', '');
+        expect($element->render())->toBe('<span class="test" foo="" hello="world"></span>');
+    });
+
+    it('sorts class names alphabetically for stable output', function () {
+        $element = new Element('span');
+        $element->add_classes(['zebra', 'alpha', 'mango']);
+
+        expect((string) $element)->toBe('<span class="alpha mango zebra"></span>');
+    });
+
+    it('throws when an attribute value is not scalar or stringable', function () {
+        $element = new Element('span');
+        $element->add_attribute('foo', new stdClass);
+
+        expect(fn () => $element->render())->toThrow(InvalidArgumentException::class);
+    });
 });
 
-test('add_classes', function () {
-    $element = new Element('span');
-    $element->add_classes(['foo', 'bar']);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
+describe('trait composition', function () {
+    it('works without extending Component or Element', function () {
+        $widget = new class('div') implements ElementInterface
+        {
+            use ComponentTrait, ElementTrait {
+                ElementTrait::render insteadof ComponentTrait;
+            }
 
-test('add_classes_with_string', function () {
-    $element = new Element('span');
-    $element->add_classes('foo bar');
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
+            public function __construct(public readonly string $tag) {}
+        };
 
-test('add_classes_with_constructor', function () {
-    $element = new Element('span', ['class' => ['foo', 'bar']]);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
+        $widget->add_content('hello');
 
-test('set_classes', function () {
-    $element = new Element('span', ['class' => 'baz']);
-    $element->set_classes(['foo', 'bar']);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
-
-test('set_classes_with_string', function () {
-    $element = new Element('span', ['class' => 'baz']);
-    $element->set_classes('foo bar');
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
-
-test('set_classes_deduplicates', function () {
-    $element = new Element('span');
-    $element->set_classes(['foo', 'bar', 'foo']);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
-
-test('set_classes_filters_empty_strings', function () {
-    $element = new Element('span');
-    $element->set_classes(['foo', '', 'bar']);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
-
-test('add_classes_filters_empty_strings', function () {
-    $element = new Element('span');
-    $element->add_classes(['foo', '', 'bar']);
-    expect((string) $element)->toBe('<span class="bar foo"></span>');
-});
-
-test('classes_are_sorted_in_render_output', function () {
-    $element = new Element('span');
-    $element->add_classes(['zebra', 'alpha', 'mango']);
-    expect((string) $element)->toBe('<span class="alpha mango zebra"></span>');
-});
-
-test('get_classes_preserves_insertion_order', function () {
-    $element = new Element('span');
-    $element->add_classes(['zebra', 'alpha', 'mango']);
-    expect($element->get_classes())->toBe(['zebra', 'alpha', 'mango']);
-});
-
-test('add_class_skips_boolean_values', function () {
-    $element = new Element('span');
-    $element->add_attribute('class', true);
-    $element->add_attribute('class', false);
-    expect($element->get_classes())->toBe([]);
-});
-
-test('add_classes_skips_boolean_values_in_array', function () {
-    $element = new Element('span');
-    $element->add_attribute('class', ['foo', true, 'bar', false]);
-    expect($element->get_classes())->toBe(['foo', 'bar']);
-});
-
-test('add_attribute', function () {
-    $element = new Element('span');
-    $element->add_attribute('hello', 'world');
-    expect((string) $element)->toBe('<span hello="world"></span>');
-});
-
-test('add_attribute_skips_null_and_false', function () {
-    $element = new Element('span');
-    $element->add_attribute('hello', null);
-    $element->add_attribute('world', false);
-    expect((string) $element)->toBe('<span></span>');
-});
-
-test('add_attribute_boolean_and_empty_string', function () {
-    $element = new Element('span');
-    $element->add_attribute('checked', true);
-    $element->add_attribute('readonly', '');
-    expect((string) $element)->toBe('<span checked readonly=""></span>');
-});
-
-test('add_attributes', function () {
-    $element = new Element('span');
-    $element->add_attributes(['foo' => '', 'hello' => 'world']);
-    expect((string) $element)->toBe('<span foo="" hello="world"></span>');
-});
-
-test('add_attributes_order', function () {
-    $element = new Element('span');
-    $element->add_attributes(['hello' => 'world', 'foo' => '', 'bar' => true]);
-    expect((string) $element)->toBe('<span bar foo="" hello="world"></span>');
-});
-
-test('add_attribute_controls_non_array', function () {
-    $element = new Element('span');
-    $result = $element->add_attribute('_controls', 'invalid');
-    expect($result)->toBe($element);
-    expect((string) $element)->toBe('<span></span>');
-});
-
-test('has_attribute', function () {
-    $element = new Element('span');
-    $element->add_attribute('hello', 'world');
-    expect($element->has_attribute('hello'))->toBeTrue();
-    expect($element->has_attribute('unknown'))->toBeFalse();
-});
-
-test('get_attributes', function () {
-    $element = new Element('span');
-    $element->add_attributes(['foo' => '', 'hello' => 'world']);
-    expect($element->get_attribute('foo'))->toBe('');
-    expect($element->get_attribute('hello'))->toBe('world');
-
-    expect($element->get_attribute('unknown'))->toBeNull();
-});
-
-test('set_attributes', function () {
-    $element = new Element('span', ['foo' => 'bar']);
-    expect((string) $element)->toBe('<span foo="bar"></span>');
-    $element->set_attributes(['hello' => 'world']);
-    expect((string) $element)->toBe('<span hello="world"></span>');
-});
-
-test('set_attributes_resets_classes', function () {
-    $element = new Element('span', ['class' => 'foo']);
-    $element->set_attributes(['class' => 'bar']);
-    expect((string) $element)->toBe('<span class="bar"></span>');
-});
-
-test('render', function () {
-    $element = new Element('span');
-    expect($element->render())->toBe('<span></span>');
-});
-
-test('render_auto_void', function () {
-    $element = new Element('br');
-    expect($element->render())->toBe('<br>');
-});
-
-test('render_manual_void', function () {
-    $element = new Element('span', ['_controls' => ['void' => true]]);
-    expect($element->render())->toBe('<span>');
-});
-
-test('render_when_empty', function () {
-    $element = new Element('span');
-    expect($element->render())->toBe('<span></span>');
-    $element->set_control('render_empty', false);
-    expect($element->render())->toBe('');
-});
-
-test('render_attributes', function () {
-    $element = new Element('span');
-    expect($element->render())->toBe('<span></span>');
-    $element->add_class('test');
-    expect($element->render())->toBe('<span class="test"></span>');
-    $element->add_attribute('hello', 'world');
-    expect($element->render())->toBe('<span class="test" hello="world"></span>');
-    $element->add_attribute('foo', '');
-    expect($element->render())->toBe('<span class="test" foo="" hello="world"></span>');
-});
-
-test('render_non_stringable_attribute_throws', function () {
-    $element = new Element('span');
-    $element->add_attribute('foo', new stdClass);
-    expect(fn () => $element->render())->toThrow(InvalidArgumentException::class);
-});
-
-test('traits compose without extending Component or Element', function () {
-    $widget = new class('div') implements ElementInterface
-    {
-        use ComponentTrait, ElementTrait {
-            ElementTrait::render insteadof ComponentTrait;
-        }
-
-        public function __construct(public readonly string $tag) {}
-    };
-
-    $widget->add_content('hello');
-    expect((string) $widget)->toBe('<div>hello</div>');
+        expect((string) $widget)->toBe('<div>hello</div>');
+    });
 });

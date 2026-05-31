@@ -5,226 +5,269 @@ declare(strict_types=1);
 use Ozzie\Html\Component;
 use Ozzie\Html\Element;
 
-test('render', function () {
-    $component = new Component;
-    expect($component->render())->toBe('');
-});
+describe('render()', function () {
+    it('renders an empty string by default', function () {
+        $component = new Component;
 
-test('to_string', function () {
-    $component = new Component;
-    expect((string) $component)->toBe('');
-});
+        expect($component->render())->toBe('');
+    });
 
-test('add_content', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->add_content('bar');
+    it('casts to its rendered output', function () {
+        $component = new Component;
 
-    expect((string) $component)->toBe('foobar');
-});
+        expect((string) $component)->toBe('');
+    });
 
-test('prepend_content', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->prepend_content('bar');
+    it('renders null content as an empty string', function () {
+        $component = new Component;
+        $component->set_content(null);
 
-    expect((string) $component)->toBe('barfoo');
-});
+        expect($component->render())->toBe('');
+    });
 
-test('set_content', function () {
-    $component = new Component;
-    $component
-        ->add_content('foo')
-        ->set_content('bar');
+    it('renders string content unchanged', function () {
+        $component = new Component;
+        $component->set_content('foo');
 
-    expect((string) $component)->toBe('bar');
-});
+        expect($component->render())->toBe('foo');
+    });
 
-test('set_content_array', function () {
-    $component = new Component;
-    $component->set_content(['foo', 'bar', 'baz']);
-    expect((string) $component)->toBe('foobarbaz');
-});
+    it('renders integer content as a string', function () {
+        $component = new Component;
+        $component->set_content(42);
 
-test('render_null_content', function () {
-    $component = new Component;
-    $component->set_content(null);
-    expect($component->render())->toBe('');
-});
+        expect($component->render())->toBe('42');
+    });
 
-test('render_string_content', function () {
-    $component = new Component;
-    $component->set_content('foo');
-    expect($component->render())->toBe('foo');
-});
+    it('renders float content as a string', function () {
+        $component = new Component;
+        $component->set_content(3.14);
 
-test('render_int_content', function () {
-    $component = new Component;
-    $component->set_content(42);
-    expect($component->render())->toBe('42');
-});
+        expect($component->render())->toBe('3.14');
+    });
 
-test('render_float_content', function () {
-    $component = new Component;
-    $component->set_content(3.14);
-    expect($component->render())->toBe('3.14');
-});
+    it('renders array content in order', function () {
+        $component = new Component;
+        $component->set_content(['foo', 'bar', 'baz']);
 
-test('render_array_content', function () {
-    $component = new Component;
-    $component->set_content(['foo', 'bar', 'baz']);
-    expect($component->render())->toBe('foobarbaz');
-});
+        expect($component->render())->toBe('foobarbaz');
+    });
 
-test('render_object_content', function () {
-    $component = new Component;
-    $component->set_content(new stdClass);
-    expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
-});
-
-test('render_stringable_object_content', function () {
-    $component = new Component;
-    $stringable = new class implements Stringable
-    {
-        public function __toString(): string
+    it('renders stringable objects', function () {
+        $component = new Component;
+        $stringable = new class implements Stringable
         {
-            return 'foo';
-        }
-    };
-    $component->set_content($stringable);
-    expect($component->render())->toBe('foo');
+            public function __toString(): string
+            {
+                return 'foo';
+            }
+        };
+
+        $component->set_content($stringable);
+
+        expect($component->render())->toBe('foo');
+    });
+
+    it('throws when object content is not stringable', function () {
+        $component = new Component;
+        $component->set_content(new stdClass);
+
+        expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
+    });
+
+    it('throws when content type is unsupported', function () {
+        $component = new Component;
+        $component->set_content(true);
+
+        expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
+    });
 });
 
-test('render_bool_content_throws', function () {
-    $component = new Component;
-    $component->set_content(true);
-    expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
+describe('add_content()', function () {
+    it('appends content to the render stack', function () {
+        $component = new Component;
+        $component
+            ->add_content('foo')
+            ->add_content('bar');
+
+        expect((string) $component)->toBe('foobar');
+    });
+
+    it('returns the component for chaining', function () {
+        $component = new Component;
+
+        expect($component->add_content('foo'))->toBe($component);
+    });
 });
 
-test('element', function () {
-    $element = Component::Element('foo');
-    expect($element)->toBeInstanceOf(Element::class);
+describe('prepend_content()', function () {
+    it('adds content before existing content', function () {
+        $component = new Component;
+        $component
+            ->add_content('foo')
+            ->prepend_content('bar');
+
+        expect((string) $component)->toBe('barfoo');
+    });
+
+    it('returns the component for chaining', function () {
+        $component = new Component;
+
+        expect($component->prepend_content('foo'))->toBe($component);
+    });
 });
 
-test('add_element', function () {
-    $component = new Component;
-    $result = $component->add_element('foo');
-    expect($result)->toBe($component);
-    expect((string) $component)->toBe((string) new Element('foo'));
+describe('set_content()', function () {
+    it('replaces previously added content', function () {
+        $component = new Component;
+        $component
+            ->add_content('foo')
+            ->set_content('bar');
+
+        expect((string) $component)->toBe('bar');
+    });
+
+    it('normalises array content without adding separators', function () {
+        $component = new Component;
+        $component->set_content(['foo', 'bar', 'baz']);
+
+        expect((string) $component)->toBe('foobarbaz');
+    });
+
+    it('returns the component for chaining', function () {
+        $component = new Component;
+
+        expect($component->set_content('foo'))->toBe($component);
+    });
 });
 
-test('new_element', function () {
-    $component = new Component;
-    $result = $component->new_element('foo');
-    expect($result)->toBeInstanceOf(Element::class);
-    expect((string) $component)->toBe((string) new Element('foo'));
+describe('element()', function () {
+    it('creates a plain element instance', function () {
+        $element = Component::element('foo');
+
+        expect($element)->toBeInstanceOf(Element::class);
+    });
 });
 
-test('chaining_functions', function () {
-    $component = new Component;
+describe('add_element()', function () {
+    it('appends a new element to the component content', function () {
+        $component = new Component;
+        $result = $component->add_element('foo');
 
-    expect($component->add_content('foo'))->toBe($component);
-    expect($component->prepend_content('foo'))->toBe($component);
-    expect($component->set_content('foo'))->toBe($component);
-
-    expect($component->add_element('foo'))->toBe($component);
+        expect($result)->toBe($component);
+        expect((string) $component)->toBe((string) new Element('foo'));
+    });
 });
 
-test('cache_render_defaults_to_false', function () {
-    $component = new Component;
-    expect($component->cache_render)->toBeFalse();
+describe('new_element()', function () {
+    it('returns the new element after adding it to the component', function () {
+        $component = new Component;
+        $result = $component->new_element('foo');
+
+        expect($result)->toBeInstanceOf(Element::class);
+        expect((string) $component)->toBe((string) new Element('foo'));
+    });
 });
 
-test('cache_render_returns_fresh_output_when_disabled', function () {
-    $component = new Component;
-    $component->add_content('foo');
-    expect($component->render())->toBe('foo');
+describe('cache_render', function () {
+    it('is disabled by default', function () {
+        $component = new Component;
 
-    $component->add_content('bar');
-    expect($component->render())->toBe('foobar');
-});
+        expect($component->cache_render)->toBeFalse();
+    });
 
-test('cache_render_returns_cached_output_when_enabled', function () {
-    $component = new Component;
-    $component->cache_render = true;
-    $component->add_content('foo');
-    expect($component->render())->toBe('foo');
+    it('returns fresh output when disabled', function () {
+        $component = new Component;
+        $component->add_content('foo');
+        expect($component->render())->toBe('foo');
 
-    $component->add_content('bar');
-    expect($component->render())->toBe('foo');
-});
+        $component->add_content('bar');
+        expect($component->render())->toBe('foobar');
+    });
 
-test('cache_render_same_instance_rendered_twice', function () {
-    $component = new Component;
-    $component->cache_render = true;
-    $component->add_content('hello');
+    it('reuses the first rendered output when enabled', function () {
+        $component = new Component;
+        $component->cache_render = true;
+        $component->add_content('foo');
+        expect($component->render())->toBe('foo');
 
-    $parent = new Component;
-    $parent->add_content($component);
-    $parent->add_content($component);
+        $component->add_content('bar');
+        expect($component->render())->toBe('foo');
+    });
 
-    expect($parent->render())->toBe('hellohello');
-});
+    it('can render the same cached child instance multiple times', function () {
+        $component = new Component;
+        $component->cache_render = true;
+        $component->add_content('hello');
 
-test('cache_render_prevents_render_time_composition_duplication', function () {
-    $component = new class extends Component
-    {
-        public function render(): string
+        $parent = new Component;
+        $parent->add_content($component);
+        $parent->add_content($component);
+
+        expect($parent->render())->toBe('hellohello');
+    });
+
+    it('prevents render-time composition from duplicating content', function () {
+        $component = new class extends Component
         {
-            $this->add_content('composed ');
+            public function render(): string
+            {
+                $this->add_content('composed ');
 
-            return parent::render();
-        }
-    };
+                return parent::render();
+            }
+        };
 
-    $component->cache_render = true;
-    expect($component->render())->toBe('composed ');
-    expect($component->render())->toBe('composed ');
-});
+        $component->cache_render = true;
 
-test('cache_render_without_cache_duplicates_render_time_composition', function () {
-    $component = new class extends Component
-    {
-        public function render(): string
+        expect($component->render())->toBe('composed ');
+        expect($component->render())->toBe('composed ');
+    });
+
+    it('allows render-time composition to duplicate content when disabled', function () {
+        $component = new class extends Component
         {
-            $this->add_content('composed ');
+            public function render(): string
+            {
+                $this->add_content('composed ');
 
-            return parent::render();
-        }
-    };
+                return parent::render();
+            }
+        };
 
-    expect($component->render())->toBe('composed ');
-    expect($component->render())->toBe('composed composed ');
-});
+        expect($component->render())->toBe('composed ');
+        expect($component->render())->toBe('composed composed ');
+    });
 
-test('cache_render_empty_first_render_is_sticky', function () {
-    $component = new Component;
-    $component->cache_render = true;
-    expect($component->render())->toBe('');
+    it('keeps an empty first render as the cached value', function () {
+        $component = new Component;
+        $component->cache_render = true;
+        expect($component->render())->toBe('');
 
-    $component->add_content('foo');
-    expect($component->render())->toBe('');
-});
+        $component->add_content('foo');
+        expect($component->render())->toBe('');
+    });
 
-test('cache_render_content_mutation_after_warm_cache_is_ignored', function () {
-    $component = new Component;
-    $component->cache_render = true;
-    $component->add_content('foo');
-    $component->render();
+    it('ignores content mutation after the cache is warmed', function () {
+        $component = new Component;
+        $component->cache_render = true;
+        $component->add_content('foo');
+        $component->render();
 
-    $component->set_content('bar');
-    expect($component->render())->toBe('foo');
-});
+        $component->set_content('bar');
 
-test('cache_render_toggled_off_returns_live_content', function () {
-    $component = new Component;
-    $component->cache_render = true;
-    $component->add_content('foo');
-    $component->render();
+        expect($component->render())->toBe('foo');
+    });
 
-    $component->cache_render = false;
-    $component->add_content('bar');
-    expect($component->render())->toBe('foobar');
+    it('returns live content again when disabled after the cache is warmed', function () {
+        $component = new Component;
+        $component->cache_render = true;
+        $component->add_content('foo');
+        $component->render();
+
+        $component->cache_render = false;
+        $component->add_content('bar');
+
+        expect($component->render())->toBe('foobar');
+    });
 });
