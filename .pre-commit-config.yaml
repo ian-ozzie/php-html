@@ -1,18 +1,20 @@
 repos:
   - repo: local
     hooks:
-    - id: pint-format
+    - id: format
       name: Pint format
       entry: composer run lint:fix
       language: system
       types: [php]
     - id: lint
-      name: PHPStan + Pint
-      entry: composer run lint
+      name: PHPStan
+      entry: composer run lint:stan
       language: system
       types: [php]
-    - id: pest-test
+      exclude: ^tests/
+    - id: test
       name: Pest test
-      entry: composer run test
+      entry: composer run test:coverage
       language: system
       types: [php]
+      pass_filenames: false
