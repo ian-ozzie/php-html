@@ -55,7 +55,7 @@ class Component implements Stringable
         return $this->render_mixed($this->render_content);
     }
 
-    public function render_mixed(mixed $var): string
+    protected function render_mixed(mixed $var): string
     {
         return match (true) {
             is_null($var) => '',

@@ -250,24 +250,19 @@ test('render_when_empty', function () {
     expect($element->render())->toBe('');
 });
 
-test('render_open', function () {
+test('render_attributes', function () {
     $element = new Element('span');
-    expect($element->render_open())->toBe('<span>');
+    expect($element->render())->toBe('<span></span>');
     $element->add_class('test');
-    expect($element->render_open())->toBe('<span class="test">');
+    expect($element->render())->toBe('<span class="test"></span>');
     $element->add_attribute('hello', 'world');
-    expect($element->render_open())->toBe('<span class="test" hello="world">');
+    expect($element->render())->toBe('<span class="test" hello="world"></span>');
     $element->add_attribute('foo', '');
-    expect($element->render_open())->toBe('<span class="test" foo="" hello="world">');
+    expect($element->render())->toBe('<span class="test" foo="" hello="world"></span>');
 });
 
-test('render_close', function () {
-    $element = new Element('span');
-    expect($element->render_close())->toBe('</span>');
-});
-
-test('render_open_non_stringable_attribute_throws', function () {
+test('render_non_stringable_attribute_throws', function () {
     $element = new Element('span');
     $element->add_attribute('foo', new stdClass);
-    expect(fn () => $element->render_open())->toThrow(InvalidArgumentException::class);
+    expect(fn () => $element->render())->toThrow(InvalidArgumentException::class);
 });

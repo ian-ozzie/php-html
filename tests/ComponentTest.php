@@ -48,37 +48,43 @@ test('set_content_array', function () {
     expect((string) $component)->toBe('foobarbaz');
 });
 
-test('render_mixed_null', function () {
+test('render_null_content', function () {
     $component = new Component;
-    expect($component->render_mixed(null))->toBe('');
+    $component->set_content(null);
+    expect($component->render())->toBe('');
 });
 
-test('render_mixed_string', function () {
+test('render_string_content', function () {
     $component = new Component;
-    expect($component->render_mixed('foo'))->toBe('foo');
+    $component->set_content('foo');
+    expect($component->render())->toBe('foo');
 });
 
-test('render_mixed_int', function () {
+test('render_int_content', function () {
     $component = new Component;
-    expect($component->render_mixed(42))->toBe('42');
+    $component->set_content(42);
+    expect($component->render())->toBe('42');
 });
 
-test('render_mixed_float', function () {
+test('render_float_content', function () {
     $component = new Component;
-    expect($component->render_mixed(3.14))->toBe('3.14');
+    $component->set_content(3.14);
+    expect($component->render())->toBe('3.14');
 });
 
-test('render_mixed_array', function () {
+test('render_array_content', function () {
     $component = new Component;
-    expect($component->render_mixed(['foo', 'bar', 'baz']))->toBe('foobarbaz');
+    $component->set_content(['foo', 'bar', 'baz']);
+    expect($component->render())->toBe('foobarbaz');
 });
 
-test('render_mixed_object', function () {
+test('render_object_content', function () {
     $component = new Component;
-    expect(fn () => $component->render_mixed(new stdClass))->toThrow(InvalidArgumentException::class);
+    $component->set_content(new stdClass);
+    expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
 });
 
-test('render_mixed_object_stringable', function () {
+test('render_stringable_object_content', function () {
     $component = new Component;
     $stringable = new class implements Stringable
     {
@@ -87,12 +93,14 @@ test('render_mixed_object_stringable', function () {
             return 'foo';
         }
     };
-    expect($component->render_mixed($stringable))->toBe('foo');
+    $component->set_content($stringable);
+    expect($component->render())->toBe('foo');
 });
 
-test('render_mixed_bool_throws', function () {
+test('render_bool_content_throws', function () {
     $component = new Component;
-    expect(fn () => $component->render_mixed(true))->toThrow(InvalidArgumentException::class);
+    $component->set_content(true);
+    expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
 });
 
 test('element', function () {

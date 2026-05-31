@@ -87,7 +87,7 @@ class Element extends Component
     /**
      * @param array<mixed> $controls
      */
-    public function sanitise_controls(array $controls): static
+    protected function sanitise_controls(array $controls): static
     {
         foreach ($controls as $key => $val) {
             if (is_string($key) === true && is_bool($val) === true && isset($this->controls[$key]) === true) {
@@ -165,7 +165,7 @@ class Element extends Component
         return $this;
     }
 
-    public function sanitise_classes(mixed $val): static
+    protected function sanitise_classes(mixed $val): static
     {
         if (is_array($val)) {
             $classes = array_values(array_map(
@@ -264,7 +264,7 @@ class Element extends Component
         return $this->render_open().$content.$this->render_close();
     }
 
-    public function render_open(): string
+    protected function render_open(): string
     {
         $attributes = $this->attributes;
         if (empty($this->classes) === false) {
@@ -298,7 +298,7 @@ class Element extends Component
         return '<'.$this->tag.$attrs.'>';
     }
 
-    public function render_close(): string
+    protected function render_close(): string
     {
         return '</'.$this->tag.'>';
     }
