@@ -19,5 +19,6 @@ composer run lint:fix
 ### test
 
 ```bash
+composer run lint:stan
 composer run test:coverage
 ```

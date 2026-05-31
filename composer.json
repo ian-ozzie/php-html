@@ -29,14 +29,20 @@
     },
     "scripts": {
         "lint": [
-            "phpstan analyse",
-            "pint --test"
+            "@lint:style",
+            "@lint:stan"
         ],
         "lint:fix": [
-            "pint"
+            "pint --parallel"
+        ],
+        "lint:stan": [
+            "phpstan analyse --memory-limit=2G"
+        ],
+        "lint:style": [
+            "pint --parallel --test"
         ],
         "test": [
-            "pest"
+            "pest --display-errors --display-warnings --display-notices"
         ],
         "test:coverage": [
             "pest --coverage --min=100"
