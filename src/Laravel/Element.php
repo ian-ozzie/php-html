@@ -6,10 +6,11 @@ namespace Ozzie\Html\Laravel;
 
 use Illuminate\View\ComponentAttributeBag;
 use InvalidArgumentException;
+use Ozzie\Html\ElementInterface;
 use Ozzie\Html\ElementTrait;
 use Stringable;
 
-abstract class Element extends Component
+abstract class Element extends Component implements ElementInterface
 {
     use ElementTrait {
         render as render_html;

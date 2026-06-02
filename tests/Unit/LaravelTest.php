@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\ComponentAttributeBag;
+use Illuminate\View\View;
 use Ozzie\Html\Laravel\Component;
 use Ozzie\Html\Laravel\Element;
 use Ozzie\Html\Tests\LaravelTestCase;
@@ -100,9 +101,17 @@ describe('resolveView()', function () {
         $component = new class extends Component {};
 
         $view = $component->resolveView();
-        $result = $view(['slot' => 'hello']);
 
-        expect($result)->toBeInstanceOf(HtmlString::class);
+        expect($view)->toBeInstanceOf(View::class)
+            ->and($view->with(['slot' => 'hello'])->render())
+            ->toBe('hello');
+    });
+
+    it('renders component slot content directly through the blade bridge', function () {
+        $component = new class extends Component {};
+
+        $result = $component->renderBlade(['slot' => 'hello']);
+
         assert($result instanceof HtmlString);
         expect((string) $result)->toBe('hello');
     });
@@ -111,10 +120,9 @@ describe('resolveView()', function () {
         $component = new class extends Component {};
 
         $view = $component->resolveView();
-        $result = $view(['slot' => 'hello']);
+        $result = $view->with(['slot' => 'hello'])->render();
 
-        assert($result instanceof HtmlString);
-        expect((string) $result)->toBe('hello');
+        expect($result)->toBe('hello');
         expect($component->render())->toBe('');
     });
 
@@ -122,9 +130,7 @@ describe('resolveView()', function () {
         $element = new class('span') extends Element {};
         $attributes = new ComponentAttributeBag([true]);
 
-        $view = $element->resolveView();
-
-        expect(fn () => $view(['attributes' => $attributes]))
+        expect(fn () => $element->renderBlade(['attributes' => $attributes]))
             ->toThrow(InvalidArgumentException::class, 'attribute name (integer) must be a string');
     });
 
@@ -132,9 +138,7 @@ describe('resolveView()', function () {
         $element = new class('span') extends Element {};
         $attributes = new ComponentAttributeBag(['value' => new stdClass]);
 
-        $view = $element->resolveView();
-
-        expect(fn () => $view(['attributes' => $attributes]))
+        expect(fn () => $element->renderBlade(['attributes' => $attributes]))
             ->toThrow(InvalidArgumentException::class, 'attribute "value" value (object) must be scalar or Stringable');
     });
 });
