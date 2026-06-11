@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60be572446d82de28c4cebf4e76a5477",
+    "content-hash": "4511c28aab8384fb6e0b83947aad6d72",
     "packages": [],
     "packages-dev": [
         {
@@ -1521,16 +1521,16 @@
         },
         {
             "name": "ian-ozzie/pint-config",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ian-ozzie/php-pint-config.git",
-                "reference": "c309fcdbbc9a23c10c2350bebef7f3cb1a5ec9c7"
+                "reference": "60e37ec41d1f04e5398d701a0c8cf148b15c1fb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ian-ozzie/php-pint-config/zipball/c309fcdbbc9a23c10c2350bebef7f3cb1a5ec9c7",
-                "reference": "c309fcdbbc9a23c10c2350bebef7f3cb1a5ec9c7",
+                "url": "https://api.github.com/repos/ian-ozzie/php-pint-config/zipball/60e37ec41d1f04e5398d701a0c8cf148b15c1fb3",
+                "reference": "60e37ec41d1f04e5398d701a0c8cf148b15c1fb3",
                 "shasum": ""
             },
             "require": {
@@ -1551,9 +1551,9 @@
             "description": "My Pint configuration.",
             "support": {
                 "issues": "https://github.com/ian-ozzie/php-pint-config/issues",
-                "source": "https://github.com/ian-ozzie/php-pint-config/tree/1.0.0"
+                "source": "https://github.com/ian-ozzie/php-pint-config/tree/2.0.0"
             },
-            "time": "2026-04-25T04:13:20+00:00"
+            "time": "2026-06-10T04:31:33+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",

@@ -7,55 +7,55 @@ use Ozzie\Html\Element;
 
 describe('render()', function () {
     it('renders an empty string by default', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect($component->render())->toBe('');
     });
 
     it('casts to its rendered output', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect((string) $component)->toBe('');
     });
 
     it('renders null content as an empty string', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(null);
 
         expect($component->render())->toBe('');
     });
 
     it('renders string content unchanged', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content('foo');
 
         expect($component->render())->toBe('foo');
     });
 
     it('renders integer content as a string', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(42);
 
         expect($component->render())->toBe('42');
     });
 
     it('renders float content as a string', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(3.14);
 
         expect($component->render())->toBe('3.14');
     });
 
     it('renders array content in order', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(['foo', 'bar', 'baz']);
 
         expect($component->render())->toBe('foobarbaz');
     });
 
     it('renders stringable objects', function () {
-        $component = new Component;
-        $stringable = new class implements Stringable
+        $component = new Component();
+        $stringable = new class() implements Stringable
         {
             public function __toString(): string
             {
@@ -69,14 +69,14 @@ describe('render()', function () {
     });
 
     it('throws when object content is not stringable', function () {
-        $component = new Component;
-        $component->set_content(new stdClass);
+        $component = new Component();
+        $component->set_content(new stdClass());
 
         expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
     });
 
     it('throws when content type is unsupported', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(true);
 
         expect(fn () => $component->render())->toThrow(InvalidArgumentException::class);
@@ -85,7 +85,7 @@ describe('render()', function () {
 
 describe('add_content()', function () {
     it('appends content to the render stack', function () {
-        $component = new Component;
+        $component = new Component();
         $component
             ->add_content('foo')
             ->add_content('bar');
@@ -94,7 +94,7 @@ describe('add_content()', function () {
     });
 
     it('returns the component for chaining', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect($component->add_content('foo'))->toBe($component);
     });
@@ -102,7 +102,7 @@ describe('add_content()', function () {
 
 describe('prepend_content()', function () {
     it('adds content before existing content', function () {
-        $component = new Component;
+        $component = new Component();
         $component
             ->add_content('foo')
             ->prepend_content('bar');
@@ -111,7 +111,7 @@ describe('prepend_content()', function () {
     });
 
     it('returns the component for chaining', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect($component->prepend_content('foo'))->toBe($component);
     });
@@ -119,7 +119,7 @@ describe('prepend_content()', function () {
 
 describe('set_content()', function () {
     it('replaces previously added content', function () {
-        $component = new Component;
+        $component = new Component();
         $component
             ->add_content('foo')
             ->set_content('bar');
@@ -128,14 +128,14 @@ describe('set_content()', function () {
     });
 
     it('normalises array content without adding separators', function () {
-        $component = new Component;
+        $component = new Component();
         $component->set_content(['foo', 'bar', 'baz']);
 
         expect((string) $component)->toBe('foobarbaz');
     });
 
     it('returns the component for chaining', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect($component->set_content('foo'))->toBe($component);
     });
@@ -151,7 +151,7 @@ describe('element()', function () {
 
 describe('add_element()', function () {
     it('appends a new element to the component content', function () {
-        $component = new Component;
+        $component = new Component();
         $result = $component->add_element('foo');
 
         expect($result)->toBe($component);
@@ -161,7 +161,7 @@ describe('add_element()', function () {
 
 describe('new_element()', function () {
     it('returns the new element after adding it to the component', function () {
-        $component = new Component;
+        $component = new Component();
         $result = $component->new_element('foo');
 
         expect($result)->toBeInstanceOf(Element::class);
@@ -171,13 +171,13 @@ describe('new_element()', function () {
 
 describe('cache_render', function () {
     it('is disabled by default', function () {
-        $component = new Component;
+        $component = new Component();
 
         expect($component->cache_render)->toBeFalse();
     });
 
     it('returns fresh output when disabled', function () {
-        $component = new Component;
+        $component = new Component();
         $component->add_content('foo');
         expect($component->render())->toBe('foo');
 
@@ -186,7 +186,7 @@ describe('cache_render', function () {
     });
 
     it('reuses the first rendered output when enabled', function () {
-        $component = new Component;
+        $component = new Component();
         $component->cache_render = true;
         $component->add_content('foo');
         expect($component->render())->toBe('foo');
@@ -196,11 +196,11 @@ describe('cache_render', function () {
     });
 
     it('can render the same cached child instance multiple times', function () {
-        $component = new Component;
+        $component = new Component();
         $component->cache_render = true;
         $component->add_content('hello');
 
-        $parent = new Component;
+        $parent = new Component();
         $parent->add_content($component);
         $parent->add_content($component);
 
@@ -208,7 +208,7 @@ describe('cache_render', function () {
     });
 
     it('prevents render-time composition from duplicating content', function () {
-        $component = new class extends Component
+        $component = new class() extends Component
         {
             public function render(): string
             {
@@ -225,7 +225,7 @@ describe('cache_render', function () {
     });
 
     it('allows render-time composition to duplicate content when disabled', function () {
-        $component = new class extends Component
+        $component = new class() extends Component
         {
             public function render(): string
             {
@@ -240,7 +240,7 @@ describe('cache_render', function () {
     });
 
     it('keeps an empty first render as the cached value', function () {
-        $component = new Component;
+        $component = new Component();
         $component->cache_render = true;
         expect($component->render())->toBe('');
 
@@ -249,7 +249,7 @@ describe('cache_render', function () {
     });
 
     it('ignores content mutation after the cache is warmed', function () {
-        $component = new Component;
+        $component = new Component();
         $component->cache_render = true;
         $component->add_content('foo');
         $component->render();
@@ -260,7 +260,7 @@ describe('cache_render', function () {
     });
 
     it('returns live content again when disabled after the cache is warmed', function () {
-        $component = new Component;
+        $component = new Component();
         $component->cache_render = true;
         $component->add_content('foo');
         $component->render();

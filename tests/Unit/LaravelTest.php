@@ -98,7 +98,7 @@ describe('__construct()', function () {
 
 describe('resolveView()', function () {
     it('renders component slot content as an HTML string', function () {
-        $component = new class extends Component {};
+        $component = new class() extends Component {};
 
         $view = $component->resolveView();
 
@@ -108,7 +108,7 @@ describe('resolveView()', function () {
     });
 
     it('renders component slot content directly through the blade bridge', function () {
-        $component = new class extends Component {};
+        $component = new class() extends Component {};
 
         $result = $component->renderBlade(['slot' => 'hello']);
 
@@ -117,7 +117,7 @@ describe('resolveView()', function () {
     });
 
     it('renders components from a clone', function () {
-        $component = new class extends Component {};
+        $component = new class() extends Component {};
 
         $view = $component->resolveView();
         $result = $view->with(['slot' => 'hello'])->render();
@@ -136,7 +136,7 @@ describe('resolveView()', function () {
 
     it('throws when a blade attribute value is not scalar or stringable', function () {
         $element = new class('span') extends Element {};
-        $attributes = new ComponentAttributeBag(['value' => new stdClass]);
+        $attributes = new ComponentAttributeBag(['value' => new stdClass()]);
 
         expect(fn () => $element->renderBlade(['attributes' => $attributes]))
             ->toThrow(InvalidArgumentException::class, 'attribute "value" value (object) must be scalar or Stringable');

@@ -23,7 +23,7 @@
         }
     },
     "require-dev": {
-        "ian-ozzie/pint-config": "^1.0",
+        "ian-ozzie/pint-config": "^2.0",
         "phpstan/phpstan": "^2.1",
         "pestphp/pest": "^4.6",
         "illuminate/view": "^13.12",

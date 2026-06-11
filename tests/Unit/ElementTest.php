@@ -273,7 +273,7 @@ describe('add_attribute()', function () {
 
         it('ignores a non-scalar non-stringable non-array value', function () {
             $element = new Element('span');
-            $element->add_attribute('class', new stdClass);
+            $element->add_attribute('class', new stdClass());
 
             expect($element->get_classes())->toBe([]);
         });
@@ -380,7 +380,7 @@ describe('render()', function () {
 
     it('throws when an attribute value is not scalar or stringable', function () {
         $element = new Element('span');
-        $element->add_attribute('foo', new stdClass);
+        $element->add_attribute('foo', new stdClass());
 
         expect(fn () => $element->render())->toThrow(InvalidArgumentException::class);
     });

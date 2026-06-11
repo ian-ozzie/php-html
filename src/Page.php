@@ -22,7 +22,7 @@ class Page extends Html
 
     public static function get_instance(string $key): self
     {
-        return self::$pages[$key] ??= new self;
+        return self::$pages[$key] ??= new self();
     }
 
     public static function reset(): void
