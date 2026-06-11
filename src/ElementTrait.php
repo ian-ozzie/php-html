@@ -150,7 +150,7 @@ trait ElementTrait
     {
         if (is_array($val)) {
             $classes = array_values(array_map(
-                fn ($v): string => (is_scalar($v) && is_bool($v) === false || $v instanceof Stringable) ? (string) $v : '',
+                fn (mixed $v): string => (is_scalar($v) && is_bool($v) === false || $v instanceof Stringable) ? (string) $v : '',
                 $val,
             ));
 

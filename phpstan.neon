@@ -1,5 +1,14 @@
+includes:
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
+
 parameters:
     level: max
+    type_coverage:
+        return: 100
+        param: 100
+        property: 100
+        constant: 100
+        declare: 100
     paths:
         - src
     bootstrapFiles:

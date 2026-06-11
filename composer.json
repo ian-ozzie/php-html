@@ -27,7 +27,8 @@
         "phpstan/phpstan": "^2.1",
         "pestphp/pest": "^4.6",
         "illuminate/view": "^13.12",
-        "orchestra/testbench": "^11.1"
+        "orchestra/testbench": "^11.1",
+        "tomasvotruba/type-coverage": "^2.2"
     },
     "scripts": {
         "lint": [
