@@ -1,7 +1,8 @@
 {
+  "$schema": "https://getcomposer.org/schema.json",
   "name": "ian-ozzie/html",
-  "description": "Object based HTML generator",
   "type": "library",
+  "description": "Object based HTML generator",
   "license": "MIT",
   "authors": [
     {
@@ -9,26 +10,26 @@
       "email": "ian@ozzie.io"
     }
   ],
+  "require": {
+    "php": ">=8.3"
+  },
+  "require-dev": {
+    "ian-ozzie/pint-config": "^2.0",
+    "illuminate/view": "^13.12",
+    "orchestra/testbench": "^11.1",
+    "pestphp/pest": "^4.6",
+    "phpstan/phpstan": "^2.1",
+    "tomasvotruba/type-coverage": "^2.2"
+  },
   "autoload": {
     "psr-4": {
       "Ozzie\\Html\\": "src/"
     }
   },
-  "require": {
-    "php": ">=8.3"
-  },
   "autoload-dev": {
     "psr-4": {
       "Ozzie\\Html\\Tests\\": "tests/"
     }
-  },
-  "require-dev": {
-    "ian-ozzie/pint-config": "^2.0",
-    "phpstan/phpstan": "^2.1",
-    "pestphp/pest": "^4.6",
-    "illuminate/view": "^13.12",
-    "orchestra/testbench": "^11.1",
-    "tomasvotruba/type-coverage": "^2.2"
   },
   "scripts": {
     "lint": [
@@ -52,8 +53,13 @@
     ]
   },
   "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }
-  }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
