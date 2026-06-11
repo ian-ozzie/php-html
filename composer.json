@@ -1,59 +1,59 @@
 {
-    "name": "ian-ozzie/html",
-    "description": "Object based HTML generator",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ian Oswald",
-            "email": "ian@ozzie.io"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Ozzie\\Html\\": "src/"
-        }
-    },
-    "require": {
-        "php": ">=8.3"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Ozzie\\Html\\Tests\\": "tests/"
-        }
-    },
-    "require-dev": {
-        "ian-ozzie/pint-config": "^2.0",
-        "phpstan/phpstan": "^2.1",
-        "pestphp/pest": "^4.6",
-        "illuminate/view": "^13.12",
-        "orchestra/testbench": "^11.1",
-        "tomasvotruba/type-coverage": "^2.2"
-    },
-    "scripts": {
-        "lint": [
-            "@lint:style",
-            "@lint:stan"
-        ],
-        "lint:fix": [
-            "pint --parallel"
-        ],
-        "lint:stan": [
-            "phpstan analyse --memory-limit=2G"
-        ],
-        "lint:style": [
-            "pint --parallel --test"
-        ],
-        "test": [
-            "pest --display-errors --display-warnings --display-notices"
-        ],
-        "test:coverage": [
-            "pest --coverage --min=100"
-        ]
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+  "name": "ian-ozzie/html",
+  "description": "Object based HTML generator",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ian Oswald",
+      "email": "ian@ozzie.io"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ozzie\\Html\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.3"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Ozzie\\Html\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "ian-ozzie/pint-config": "^2.0",
+    "phpstan/phpstan": "^2.1",
+    "pestphp/pest": "^4.6",
+    "illuminate/view": "^13.12",
+    "orchestra/testbench": "^11.1",
+    "tomasvotruba/type-coverage": "^2.2"
+  },
+  "scripts": {
+    "lint": [
+      "@lint:style",
+      "@lint:stan"
+    ],
+    "lint:fix": [
+      "pint --parallel"
+    ],
+    "lint:stan": [
+      "phpstan analyse --memory-limit=2G"
+    ],
+    "lint:style": [
+      "pint --parallel --test"
+    ],
+    "test": [
+      "pest --display-errors --display-warnings --display-notices"
+    ],
+    "test:coverage": [
+      "pest --coverage --min=100"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }
