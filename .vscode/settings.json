@@ -1,5 +1,0 @@
-{
-    "phpsab.autoRulesetSearch": true,
-    "phpsab.snifferEnable": true,
-    "phpsab.snifferMode": "onType"
-}
