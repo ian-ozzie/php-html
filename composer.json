@@ -15,7 +15,9 @@
   },
   "require-dev": {
     "ian-ozzie/pint-config": "^2.0",
+    "illuminate/contracts": "*",
     "illuminate/view": "^13.12",
+    "livewire/livewire": "^4.3",
     "orchestra/testbench": "^11.1",
     "pestphp/pest": "^4.6",
     "phpstan/phpstan": "^2.1",
