@@ -11,6 +11,8 @@ use Stringable;
 
 final class DynamicLivewire extends Livewire
 {
+    public int $view_calls = 0;
+
     /**
      * @param array<string, mixed> $params
      */
@@ -31,8 +33,15 @@ final class DynamicLivewire extends Livewire
         return $this->escape($value);
     }
 
+    public function pulled_view(): View|Stringable
+    {
+        return $this->pull_view();
+    }
+
     public function view(): View|Stringable
     {
+        $this->view_calls++;
+
         return $this->provided_view ?? new HtmlString('<div>default</div>');
     }
 }

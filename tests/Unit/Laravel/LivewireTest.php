@@ -36,19 +36,36 @@ describe('to_livewire()', function () {
 });
 
 describe('escape()', function () {
-    it('escapes html and blade syntax before output is compiled by blade', function () {
+    it('escapes html', function () {
         $component = new DynamicLivewire();
 
-        expect($component->escaped('Hello @{{ $name }} <strong>{!! $html !!}</strong> & "quote"'))
-            ->toBe('Hello &#64;&#123;&#123; $name &#125;&#125; &lt;strong&gt;&#123;!! $html !!&#125;&lt;/strong&gt; &amp; &quot;quote&quot;');
+        expect($component->escaped('Hello <strong>bold</strong> & "quote"'))
+            ->toBe('Hello &lt;strong&gt;bold&lt;/strong&gt; &amp; &quot;quote&quot;');
     });
 });
 
 describe('render()', function () {
-    it('stringifies stringable views', function () {
+    it('returns a constant blade template for stringable views', function () {
         $component = new DynamicLivewire(provided_view: new HtmlString('<div>Rendered</div>'));
 
-        expect($component->render())->toBe('<div>Rendered</div>');
+        expect($component->render())->toBe('{!! $this->pull_view() !!}');
+    });
+
+    it('builds the view once per render', function () {
+        $component = new DynamicLivewire(provided_view: new HtmlString('<div>Rendered</div>'));
+
+        $component->render();
+
+        expect($component->view_calls)->toBe(1)
+            ->and((string) $component->pulled_view())->toBe('<div>Rendered</div>')
+            ->and($component->view_calls)->toBe(1);
+    });
+
+    it('builds fresh when pulled without a prior render', function () {
+        $component = new DynamicLivewire(provided_view: new HtmlString('<div>Rendered</div>'));
+
+        expect((string) $component->pulled_view())->toBe('<div>Rendered</div>')
+            ->and($component->view_calls)->toBe(1);
     });
 
     it('returns view instances without casting them', function () {
@@ -85,20 +102,14 @@ describe('Livewire integration', function () {
             ->assertSee('Clicks: 1');
     });
 
-    it('escapes html and blade syntax through the real Livewire render path', function () {
+    it('does not recompile view output as blade through the real Livewire render path', function () {
         $counter = LivewireFacade::test(DynamicCounter::alias(), [
             'label' => 'Hello @{{ $name }} <strong>{!! $html !!}</strong>',
         ]);
 
         $counter
-            ->assertSeeHtml('Hello &#64;')
-            ->assertSeeHtml('&#123;&#123; $name &#125;&#125;')
-            ->assertSeeHtml('&lt;strong&gt;')
-            ->assertSeeHtml('&#123;!! $html !!&#125;')
-            ->assertSeeHtml('&lt;/strong&gt;: 0')
-            ->assertDontSee('@{{ $name }}', false)
+            ->assertSeeHtml('Hello @{{ $name }} &lt;strong&gt;{!! $html !!}&lt;/strong&gt;: 0')
             ->assertDontSee('<strong>', false)
-            ->assertDontSee('{!! $html !!}', false)
             ->assertDontSee('</strong>', false);
     });
 });
