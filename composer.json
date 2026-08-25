@@ -15,7 +15,7 @@
   },
   "require-dev": {
     "ian-ozzie/pint-config": "^2.0",
-    "illuminate/contracts": "*",
+    "illuminate/contracts": "^13.12",
     "illuminate/view": "^13.12",
     "livewire/livewire": "^4.3",
     "orchestra/testbench": "^11.1",
